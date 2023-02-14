@@ -5,6 +5,8 @@
 
 // My Includes
 #include "Enemy.h"
+#include "Projectile.h"
+#include "GenericPlatform/GenericPlatformCrashContext.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -17,40 +19,46 @@ ATurret::ATurret()
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
 }
 
-void ATurret::BeginPlay()
-{
-    Super::BeginPlay();
-
-	GetClosestEnemy();
-
-	// Set a looping timer
-	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ATurret::CheckFireCondition, FireRate, true);
-}
-
-
 void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	if (InFireRange())
-		RotateTurret(Enemy->GetActorLocation());
-	else
 	{
-		if (IsCheckingForEnememy == false)
-		{
-			IsCheckingForEnememy = true;
-			
-			// Set a looping timer                                                                                        	      
-			GetWorldTimerManager().SetTimer(UpdateEnemiesArray, this, &ATurret::GetClosestEnemy, UpdateEnemiesRate, false);
+		RotateTurret(Enemy->GetActorLocation());
+	}
+	else if (IsCheckingForEnemy == false)
+	{
+		IsCheckingForEnemy = true;
 
-			
-		}
+		// Begin finding the closest enemy timer
+		GetWorldTimerManager().SetTimer(UpdateEnemiesArray, this, &ATurret::GetClosestEnemy, UpdateEnemiesRate, false);
 	}
 }
 
+void ATurret::HandleDestruction()
+{
+	Super::HandleDestruction();
+	Destroy();
+}
 
+void ATurret::OnEnemyDestroyed(AActor* DestroyedActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnEnemyDestroyed"));
 
+	Enemy = nullptr;
+	GetClosestEnemy();
+}
 
+void ATurret::BeginPlay()
+{
+    Super::BeginPlay();
+	
+	GetClosestEnemy();
+
+	// Begin Fire timer
+	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ATurret::CheckFireCondition, FireRate, true);
+}
 
 void ATurret::RotateTurret(const FVector& LookAtTarget) const
 {
@@ -67,63 +75,90 @@ void ATurret::RotateTurret(const FVector& LookAtTarget) const
 
 void ATurret::Fire()
 {
-	FVector ProjectileSpawnPointLocation = ProjectileSpawnPoint->GetComponentLocation();
-	DrawDebugSphere(
-		GetWorld(),
-		ProjectileSpawnPointLocation,
-		25.f,
-		12,
-		FColor::Red,
-		false,
-		3.0f);
+	if (ProjectileClass == nullptr)
+	{
+		return;
+	}
+	
+	AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(
+	ProjectileClass,
+	ProjectileSpawnPoint->GetComponentLocation(),
+	ProjectileSpawnPoint->GetComponentRotation());
+
+	Projectile->SetOwner(this);
 }
 
 
 void ATurret::GetClosestEnemy()
-{	
+{
 	// Find all enemies
 	TArray<AActor*> FoundEnemies;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), FoundEnemies);
-    
-	if (!FoundEnemies.IsEmpty())
+	
+	if (FoundEnemies.IsEmpty() == false)
 	{
-		// Find the distance to the closest Enemy
+		// Remove any invalid Enemies
+		for (auto FoundEnemy : FoundEnemies)
+		{
+			if (FoundEnemy->IsActorBeingDestroyed())
+			{
+				FoundEnemies.Remove(FoundEnemy);
+			}
+		}
+
+		// Return if now there are NOW no possible targets
+		if (FoundEnemies.IsEmpty())
+		{
+			return;
+		}
+		
+		// Find the closest Enemy
 		Enemy = Cast<AEnemy>(FoundEnemies[0]);
 		for (int32 i = 0; i < FoundEnemies.Num(); i++)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Enemy Found!"));
-
-			// Update which is the closest enemy (target)
-			if (FVector::Dist(GetActorLocation(), FoundEnemies[i]->GetActorLocation()) <
-				FVector::Dist(GetActorLocation(), Enemy->GetActorLocation()))
+			if (FVector::Dist(GetActorLocation(), FoundEnemies[i]->GetActorLocation()) < FVector::Dist(GetActorLocation(), Enemy->GetActorLocation()))
 			{
-				UE_LOG(LogTemp, Display, TEXT("New closest enemy %s!"), *FoundEnemies[i]->GetActorNameOrLabel() );
 				Enemy = Cast<AEnemy>(FoundEnemies[i]);
 			}
 		}
-	}
 
-	IsCheckingForEnememy = false;
+		// Bind Enemy Delegates
+		if (Enemy)
+		{
+			Enemy->OnDestroyed.AddDynamic(this, &ATurret::OnEnemyDestroyed);
+		}
+	}
+	
+	IsCheckingForEnemy = false;
 }
+
 
 
 void ATurret::CheckFireCondition()
 {
+	if (Enemy == nullptr)
+	{
+		return;
+	}
+
+	
 	if (InFireRange())
+	{
 		Fire();
+	}
 }
+
 
 bool ATurret::InFireRange() const
 { 
 	// Check to see if the Enemy is in range
 	if (Enemy)
+	{
 		if (FVector::Dist(GetActorLocation(), Enemy->GetActorLocation()) <= FireRange)
+		{
 			return true;
+		}
+	}
 
-	// TODO
-	// start a routine which periodically checks for new enemies within range
-
-	
-	
 	return false;
 }

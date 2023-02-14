@@ -20,15 +20,14 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-protected:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UStaticMeshComponent* TurretMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* ProjectileSpawnPoint;
 	
+	virtual void HandleDestruction() override;
+
+	// Delegate bound to Enemy OnDestroyed
+	UFUNCTION()
+	void OnEnemyDestroyed(AActor* DestroyedActor);
+	
+protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -38,20 +37,34 @@ protected:
 	
 private:
 	
-	class AEnemy* Enemy;
-	void GetClosestEnemy();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* TurretMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* ProjectileSpawnPoint;
 	
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<class AProjectile> ProjectileClass;
+
+	// ----- Fire Settings
 	UPROPERTY(EditInstanceOnly, Category = "Combat")
 	float FireRange = 1000.f;
 
-	FTimerHandle UpdateEnemiesArray;
-	float UpdateEnemiesRate = 0.5f;
-	bool IsCheckingForEnememy = false;
+	UPROPERTY(EditInstanceOnly, Category = "Combat")
+	float FireRate = 2.0f;
 	
 	FTimerHandle FireRateTimerHandle;
-	float FireRate = 2.0f;
-
+	
 	void CheckFireCondition();
 
 	bool InFireRange() const;
+
+	// ----- Enemy Interaction
+	class AEnemy* Enemy;
+	void GetClosestEnemy();
+
+
+	FTimerHandle UpdateEnemiesArray;
+	float UpdateEnemiesRate = 0.5f;
+	bool IsCheckingForEnemy = false;
 };
