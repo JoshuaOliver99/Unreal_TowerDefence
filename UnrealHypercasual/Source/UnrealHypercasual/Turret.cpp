@@ -5,6 +5,7 @@
 
 // My Includes
 #include "Enemy.h"
+#include "EnemyCharacter.h"
 #include "Projectile.h"
 #include "GenericPlatform/GenericPlatformCrashContext.h"
 #include "Kismet/GameplayStatics.h"
@@ -25,7 +26,7 @@ void ATurret::Tick(float DeltaTime)
 
 	if (InFireRange())
 	{
-		RotateTurret(Enemy->GetActorLocation());
+		RotateTurret(Target->GetActorLocation());
 	}
 	else if (IsCheckingForEnemy == false)
 	{
@@ -44,9 +45,7 @@ void ATurret::HandleDestruction()
 
 void ATurret::OnEnemyDestroyed(AActor* DestroyedActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnEnemyDestroyed"));
-
-	Enemy = nullptr;
+	Target = nullptr;
 	GetClosestEnemy();
 }
 
@@ -93,16 +92,16 @@ void ATurret::GetClosestEnemy()
 {
 	// Find all enemies
 	TArray<AActor*> FoundEnemies;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), FoundEnemies);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyCharacter::StaticClass(), FoundEnemies);
 	
 	if (FoundEnemies.IsEmpty() == false)
 	{
-		// Remove any invalid Enemies
-		for (auto FoundEnemy : FoundEnemies)
+		// Remove any invalid Enemies 
+		for (int32 i = 0; i < FoundEnemies.Num(); i++)
 		{
-			if (FoundEnemy->IsActorBeingDestroyed())
+			if (FoundEnemies[i]->IsActorBeingDestroyed())
 			{
-				FoundEnemies.Remove(FoundEnemy);
+				FoundEnemies.RemoveAt(i);
 			}
 		}
 
@@ -113,19 +112,19 @@ void ATurret::GetClosestEnemy()
 		}
 		
 		// Find the closest Enemy
-		Enemy = Cast<AEnemy>(FoundEnemies[0]);
+		Target = FoundEnemies[0];
 		for (int32 i = 0; i < FoundEnemies.Num(); i++)
 		{
-			if (FVector::Dist(GetActorLocation(), FoundEnemies[i]->GetActorLocation()) < FVector::Dist(GetActorLocation(), Enemy->GetActorLocation()))
+			if (FVector::Dist(GetActorLocation(), FoundEnemies[i]->GetActorLocation()) < FVector::Dist(GetActorLocation(), Target->GetActorLocation()))
 			{
-				Enemy = Cast<AEnemy>(FoundEnemies[i]);
+				Target = FoundEnemies[i];
 			}
 		}
 
 		// Bind Enemy Delegates
-		if (Enemy)
+		if (Target)
 		{
-			Enemy->OnDestroyed.AddDynamic(this, &ATurret::OnEnemyDestroyed);
+			Target->OnDestroyed.AddDynamic(this, &ATurret::OnEnemyDestroyed);
 		}
 	}
 	
@@ -136,7 +135,7 @@ void ATurret::GetClosestEnemy()
 
 void ATurret::CheckFireCondition()
 {
-	if (Enemy == nullptr)
+	if (Target == nullptr)
 	{
 		return;
 	}
@@ -152,9 +151,9 @@ void ATurret::CheckFireCondition()
 bool ATurret::InFireRange() const
 { 
 	// Check to see if the Enemy is in range
-	if (Enemy)
+	if (Target)
 	{
-		if (FVector::Dist(GetActorLocation(), Enemy->GetActorLocation()) <= FireRange)
+		if (FVector::Dist(GetActorLocation(), Target->GetActorLocation()) <= FireRange)
 		{
 			return true;
 		}

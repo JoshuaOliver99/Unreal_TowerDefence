@@ -4,6 +4,7 @@
 #include "TowerDefenceGameMode.h"
 
 #include "Enemy.h"
+#include "EnemyCharacter.h"
 #include "Tower.h"
 #include "TowerDefencePlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,7 +22,7 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 
 		GameOver(false);
 	}
-	else if (AEnemy* KilledEnemy = Cast<AEnemy>(DeadActor))
+	else if (AEnemyCharacter* KilledEnemy = Cast<AEnemyCharacter>(DeadActor))
 	{
 		KilledEnemy->HandleDestruction();
 		
@@ -73,7 +74,7 @@ void ATowerDefenceGameMode::HandleGameStart()
 int32 ATowerDefenceGameMode::GetTargetEnemyCount()
 {
 	TArray<AActor*> Enemies;
-	UGameplayStatics::GetAllActorsOfClass(this, AEnemy::StaticClass(), Enemies);
+	UGameplayStatics::GetAllActorsOfClass(this, AEnemyCharacter::StaticClass(), Enemies);
 
 	return Enemies.Num();
 }

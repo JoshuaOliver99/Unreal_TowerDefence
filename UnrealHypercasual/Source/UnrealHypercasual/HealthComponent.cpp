@@ -20,8 +20,6 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-
-
 // Called when the game starts
 void UHealthComponent::BeginPlay()
 {
@@ -38,13 +36,29 @@ void UHealthComponent::BeginPlay()
 void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* Instigator, AActor* DamageCauser)
 {
 	if (Damage <= 0.f)
+	{
 		return;
+	}
 
 	Health -= Damage;
 
 	if (Health <= 0.f && TowerDefenceGameMode)
 	{
 		TowerDefenceGameMode->ActorDied(DamagedActor);
-		
 	}
+}
+
+void UHealthComponent::HandleDestruction()
+{
+	if (DeathParticles)
+		UGameplayStatics::SpawnEmitterAtLocation(this, DeathParticles, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
+
+	if (DeathSound)
+		UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
+	
+	if (DeathCameraShakeClass)
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(DeathCameraShakeClass);
+
+	
+	GetOwner()->Destroy();
 }

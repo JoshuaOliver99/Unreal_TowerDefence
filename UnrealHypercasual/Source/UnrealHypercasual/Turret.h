@@ -60,7 +60,7 @@ private:
 	bool InFireRange() const;
 
 	// ----- Enemy Interaction
-	class AEnemy* Enemy;
+	class AActor* Target;
 	void GetClosestEnemy();
 
 

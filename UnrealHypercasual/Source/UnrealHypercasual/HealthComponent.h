@@ -20,6 +20,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	float GetHealth() const {return Health;}
+
+	virtual void HandleDestruction();
+
 	
 protected:
 	// Called when the game starts
@@ -27,11 +30,21 @@ protected:
 
 private:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Health")
 	float MaxHealth = 100.f;
-	UPROPERTY(VisibleInstanceOnly)
+	
+	UPROPERTY(VisibleInstanceOnly, Category = "Health")
 	float Health = 0.f;
 
+	UPROPERTY(EditAnywhere, Category = "Health")
+	class UParticleSystem* DeathParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Health")
+	class USoundBase* DeathSound;
+
+	UPROPERTY(EditAnywhere, Category = "Health")
+	TSubclassOf<class UCameraShakeBase> DeathCameraShakeClass;
+	
 	// Bound to a delegate
 	UFUNCTION()
 	void DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser );
