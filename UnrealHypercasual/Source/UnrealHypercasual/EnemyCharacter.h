@@ -3,19 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "CharacterBase.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
-class UNREALHYPERCASUAL_API AEnemyCharacter : public ACharacter
+class UNREALHYPERCASUAL_API AEnemyCharacter : public ACharacterBase
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AEnemyCharacter();
-
-	virtual void HandleDestruction();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,14 +25,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-private:
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	class UParticleSystem* DeathParticles;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	class USoundBase* DeathSound;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	TSubclassOf<class UCameraShakeBase> DeathCameraShakeClass;
 };

@@ -3,7 +3,6 @@
 
 #include "TowerDefenceGameMode.h"
 
-#include "Enemy.h"
 #include "EnemyCharacter.h"
 #include "Tower.h"
 #include "TowerDefencePlayerController.h"
