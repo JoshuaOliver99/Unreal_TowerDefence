@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponBase();
 
+	virtual void UseWeapon();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* WeaponMesh;

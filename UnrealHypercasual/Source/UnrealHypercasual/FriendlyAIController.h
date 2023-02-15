@@ -22,4 +22,19 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+
+	
+	// TODO: Remove Debug
+private:
+	TArray<AActor*> SeenActors;
+
+	AActor* ClosestEnemy;
+	void UpdateClosestEnemy();
+	FTimerHandle UpdateClosestEnemyTimerHandle;
+	float UpdateClosestEnemyRate = 0.5f;
+
+	void UseWeapon();
+	FTimerHandle UseWeaponTimerHandle;
+	float UseWeaponRate = 0.5f;
 };

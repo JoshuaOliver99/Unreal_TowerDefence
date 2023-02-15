@@ -14,6 +14,12 @@ AWeaponBase::AWeaponBase()
 	WeaponMesh->SetupAttachment(RootComponent);
 }
 
+void AWeaponBase::UseWeapon()
+{
+	// TODO: Debug
+	UE_LOG(LogTemp, Warning, TEXT("[AWeaponBase::Use]"));
+}
+
 // Called when the game starts or when spawned
 void AWeaponBase::BeginPlay()
 {

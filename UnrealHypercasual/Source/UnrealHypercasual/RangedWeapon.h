@@ -18,7 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	ARangedWeapon();
 
-	void Fire();
+	virtual void UseWeapon() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -27,6 +27,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<class AProjectile> ProjectileClass;
 
+
+	// TODO: Consider implementing only if ProjectileClass is not set. i.e. use line trace instead.
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float FireRange = 1000.f;
 

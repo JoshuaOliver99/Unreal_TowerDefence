@@ -3,6 +3,7 @@
 
 #include "CharacterBase.h"
 #include "HealthComponent.h"
+#include "WeaponBase.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
@@ -26,6 +27,19 @@ void ACharacterBase::HandleDestruction()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (WeaponClass)
+	{
+		// Spawn Weapon
+		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+		// Remove gun mesh from model via bone
+		GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
+		// Attach the gun to the skeleton socket
+		//RangedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+		// Set owner of the gun (Important for damage and multiplayer)
+		Weapon->SetOwner(this);
+	}
 }
 
 // Called every frame
@@ -40,5 +54,13 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ACharacterBase::UseWeapon()
+{
+	if (Weapon)
+	{
+		Weapon->UseWeapon();
+	}
 }
 

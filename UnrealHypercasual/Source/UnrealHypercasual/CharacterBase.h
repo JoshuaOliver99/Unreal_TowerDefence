@@ -32,4 +32,16 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	
+	// TODO: Debug/Review this
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class AWeaponBase> WeaponClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	class AWeaponBase* Weapon;
+
+public:
+	virtual void UseWeapon();
 };

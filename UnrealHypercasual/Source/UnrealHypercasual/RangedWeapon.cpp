@@ -15,10 +15,13 @@ ARangedWeapon::ARangedWeapon()
 	ProjectileSpawnPoint->SetupAttachment(WeaponMesh);
 }
 
-void ARangedWeapon::Fire()
+void ARangedWeapon::UseWeapon()
 {
+	Super::UseWeapon();
+
 	if (ProjectileClass == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("[%s ARangedWeapon::UseWeapon] ProjectileClass is null!"), *GetActorNameOrLabel())
 		return;
 	}
 	

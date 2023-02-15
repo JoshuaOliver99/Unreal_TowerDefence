@@ -16,18 +16,9 @@ class UNREALHYPERCASUAL_API AFriendlyCharacter_Turret : public AFriendlyCharacte
 
 public:
 	AFriendlyCharacter_Turret();
-	
-	void Fire();
 
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class ARangedWeapon> RangedWeaponClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
-	class ARangedWeapon* RangedWeapon;
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+
 	
 private:
 	// TODO
