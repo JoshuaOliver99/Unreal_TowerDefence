@@ -29,7 +29,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartGame();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	
 	void GameOver(bool bWonGame);
 	
 private:

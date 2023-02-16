@@ -3,14 +3,19 @@
 
 #include "Tower.h"
 
+#include "HealthComponent.h"
+
 // Sets default values
 ATower::ATower()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	// Create Default Components
 	TowerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tower Mesh"));
 	TowerMesh->SetupAttachment(RootComponent);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 }
 
 // Called every frame
@@ -21,9 +26,10 @@ void ATower::Tick(float DeltaTime)
 
 void ATower::HandleDestruction()
 {
-	// TODO Put death effects here...
-	
-	Destroy();
+	if (HealthComponent)
+	{
+		HealthComponent->HandleDestruction();
+	}
 }
 
 // Called when the game starts or when spawned

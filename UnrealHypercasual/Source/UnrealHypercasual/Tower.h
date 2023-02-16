@@ -21,11 +21,13 @@ public:
 	void HandleDestruction();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* TowerMesh;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UHealthComponent* HealthComponent;
 
+	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 };

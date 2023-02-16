@@ -12,13 +12,14 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 {
 	if (DeadActor == Tower)
 	{
+		
 		Tower->HandleDestruction();
 
 		if (PlayerController)
 		{
 			PlayerController->SetPlayerEnabledState(false);
 		}
-
+		
 		GameOver(false);
 	}
 	else if (AEnemyCharacter* KilledEnemy = Cast<AEnemyCharacter>(DeadActor))
@@ -37,12 +38,22 @@ void ATowerDefenceGameMode::BeginPlay()
 	HandleGameStart();
 }
 
+void ATowerDefenceGameMode::GameOver(bool bWonGame)
+{
+	if (bWonGame)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Round Cleared!"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Tower Destroyed! Game Over..."));
+	}
+}
+
 void ATowerDefenceGameMode::HandleGameStart()
 {
 	EnemyCount = GetTargetEnemyCount();
 	
-	//Tower = Cast<ATower>(UGameplayStatics::GetPlayerPawn(this, 0));
-
 	// Get the level Tower
 	Tower = Cast<ATower>(UGameplayStatics::GetActorOfClass(GetWorld(), ATower::StaticClass()));
 
