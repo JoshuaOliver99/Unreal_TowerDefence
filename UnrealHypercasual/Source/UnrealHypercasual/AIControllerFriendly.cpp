@@ -4,6 +4,7 @@
 #include "AIControllerFriendly.h"
 
 #include "CharacterBase.h"
+#include "CharacterEnemy.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 
@@ -11,33 +12,30 @@ AAIControllerFriendly::AAIControllerFriendly()
 {
 	// Create Default Components
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component"));
-	
 }
 
 void AAIControllerFriendly::OnPerceptionRegistered(const TArray<AActor*>& UpdatedActors)
 {
-	// TODO: Debug
 	for (int i = 0; i < UpdatedActors.Num(); ++i)
 	{
-		// Test for sight
-		const FAISenseID SightSenseID = UAISense::GetSenseID(UAISense_Sight::StaticClass());
-		if (PerceptionComponent->HasActiveStimulus(*UpdatedActors[i], SightSenseID))
+		// Only look for Enemy
+		ACharacterEnemy* CurrentEnemy = Cast<ACharacterEnemy>(UpdatedActors[i]);
+		if (CurrentEnemy == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s Is seen"), *UpdatedActors[i]->GetActorNameOrLabel());
-
-			if (SeenActors.Contains(UpdatedActors[i]) == false)
-			{
-				SeenActors.Add(UpdatedActors[i]);
-			}
+			continue;
 		}
-		else
+		
+		// Get which Enemy are in sight
+		const FAISenseID SightSenseID = UAISense::GetSenseID(UAISense_Sight::StaticClass());
+		const bool IsInSight = PerceptionComponent->HasActiveStimulus(*CurrentEnemy, SightSenseID);
+		
+		if (IsInSight && EnemyInSight.Contains(CurrentEnemy) == false)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%s Is out of sight"), *UpdatedActors[i]->GetActorNameOrLabel());
-
-			if (SeenActors.Contains(UpdatedActors[i]))
-			{
-				SeenActors.Remove(UpdatedActors[i]);
-			}
+			EnemyInSight.Add(CurrentEnemy);
+		}
+		else if (IsInSight == false && EnemyInSight.Contains(CurrentEnemy))
+		{
+			EnemyInSight.Remove(CurrentEnemy);
 		}
 	}
 }
@@ -56,23 +54,35 @@ void AAIControllerFriendly::BeginPlay()
 
 void AAIControllerFriendly::UpdateClosestEnemy()
 {
-	if (SeenActors.Num() <= 0)
+	if (EnemyInSight.Num() <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[AFriendlyAIController::UpdateClosestEnemy] SeenActors is empty"));
 		ClosestEnemy = nullptr;
 		return;
 	}
-	
-	ClosestEnemy = SeenActors[0];
-	for (int i = 0; i < SeenActors.Num(); ++i)
+
+	// Compare which is closest Enemy
+	ClosestEnemy = EnemyInSight[0];
+	for (int i = 0; i < EnemyInSight.Num(); ++i)
 	{
-		if (FVector::Dist(GetPawn()->GetActorLocation(), SeenActors[i]->GetActorLocation()) <= FVector::Dist(GetPawn()->GetActorLocation(), ClosestEnemy->GetActorLocation()))
+		if (FVector::Dist(GetPawn()->GetActorLocation(), EnemyInSight[i]->GetActorLocation()) <=
+			FVector::Dist(GetPawn()->GetActorLocation(), ClosestEnemy->GetActorLocation()))
 		{
-			ClosestEnemy = SeenActors[i];
+			ClosestEnemy = EnemyInSight[i];
+			ClosestEnemy->OnDestroyed.AddDynamic(this, &AAIControllerFriendly::OnClosestEnemyDestroyed);
 		}
 	}
 }
 
+void AAIControllerFriendly::OnClosestEnemyDestroyed(AActor* DestroyedActor)
+{
+	// ClosestEnemy OnDestroyed cleanup
+	if (EnemyInSight.Contains(ClosestEnemy))
+	{
+		EnemyInSight.Remove(Cast<ACharacterEnemy>(ClosestEnemy));
+	}
+
+	ClosestEnemy->OnDestroyed.RemoveDynamic(this, &AAIControllerFriendly::OnClosestEnemyDestroyed);
+}
 
 void AAIControllerFriendly::UseWeapon()
 {
@@ -86,7 +96,6 @@ void AAIControllerFriendly::UseWeapon()
 
 		GetPawn()->FaceRotation(LookAtRotation, 2.0f);
 		// End...
-
 		
 		
 		// UseWeapon

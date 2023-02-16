@@ -15,33 +15,33 @@ public:
 	// Sets default values for this character's properties
 	ACharacterBase();
 
-	// To be called whenever this Character is destroyed 
-	virtual void HandleDestruction();
-	
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UHealthComponent* HealthComponent;
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-
 	
-	// TODO: Debug/Review this
+	// To be called whenever this Character is destroyed 
+	virtual void HandleDestruction();
+
+	virtual void UseWeapon();
+	
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UHealthComponent* HealthComponent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UAIPerceptionStimuliSourceComponent* PerceptionStimuliSourceComponentComponent;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AWeaponBase> WeaponClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	class AWeaponBase* Weapon;
 
-public:
-	virtual void UseWeapon();
+
+	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
 };

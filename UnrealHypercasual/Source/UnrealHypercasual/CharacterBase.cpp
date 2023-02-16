@@ -4,6 +4,11 @@
 #include "CharacterBase.h"
 #include "HealthComponent.h"
 #include "WeaponBase.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISenseConfig.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISense_Sight.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
@@ -13,14 +18,13 @@ ACharacterBase::ACharacterBase()
 
 	// Create Default Components
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
-}
+	
+	PerceptionStimuliSourceComponentComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Perception Stimuli Source Component"));
 
-void ACharacterBase::HandleDestruction()
-{
-	if (HealthComponent)
-	{
-		HealthComponent->HandleDestruction();
-	}
+	// NOTE: These are broken and must be manually set (16/02/2023)
+	// Source: https://forums.unrealengine.com/t/cant-register-uaisense-sight-with-uaiperceptionstimulisourcecomponent/149852/3
+	//PerceptionStimuliSourceComponentComponent->RegisterWithPerceptionSystem();
+	//PerceptionStimuliSourceComponentComponent->RegisterForSense(TSubclassOf<UAISense_Sight>());
 }
 
 // Called when the game starts or when spawned
@@ -28,15 +32,20 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Spawn Weapon
 	if (WeaponClass)
 	{
 		// Spawn Weapon
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+
 		// Remove gun mesh from model via bone
-		GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
+		//GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
+
 		// Attach the gun to the skeleton socket
 		//RangedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+		
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+
 		// Set owner of the gun (Important for damage and multiplayer)
 		Weapon->SetOwner(this);
 	}
@@ -54,6 +63,14 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ACharacterBase::HandleDestruction()
+{
+	if (HealthComponent)
+	{
+		HealthComponent->HandleDestruction();
+	}
 }
 
 void ACharacterBase::UseWeapon()

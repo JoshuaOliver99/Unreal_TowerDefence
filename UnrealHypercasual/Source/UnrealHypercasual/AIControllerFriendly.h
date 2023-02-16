@@ -17,22 +17,26 @@ class UNREALHYPERCASUAL_API AAIControllerFriendly : public AAIControllerBase
 public:
 	AAIControllerFriendly();
 
+	// Delegate Called by PerceptionComponent->OnPerceptionUpdated 
 	UFUNCTION()
 	void OnPerceptionRegistered(const TArray<AActor*>& UpdatedActors);
 
 protected:
 	virtual void BeginPlay() override;
-
-
 	
-	// TODO: Remove Debug
+	// TODO: Note all this can likely be generalised and moved to the parent to avoid duplication
+	// e.g. UpdateClosestTarget() which uses a TargetTypeClass 
 private:
-	TArray<AActor*> SeenActors;
+	TArray<class ACharacterEnemy*> EnemyInSight;
 
 	AActor* ClosestEnemy;
 	void UpdateClosestEnemy();
 	FTimerHandle UpdateClosestEnemyTimerHandle;
 	float UpdateClosestEnemyRate = 0.5f;
+
+	// Delegate Called by ClosestEnemy->OnDestroyed for cleanup 
+	UFUNCTION()
+	void OnClosestEnemyDestroyed(AActor* DestroyedActor);
 
 	void UseWeapon();
 	FTimerHandle UseWeaponTimerHandle;
