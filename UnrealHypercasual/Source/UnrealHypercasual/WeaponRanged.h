@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
-#include "RangedWeapon.generated.h"
+#include "WeaponRanged.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNREALHYPERCASUAL_API ARangedWeapon : public AWeaponBase
+class UNREALHYPERCASUAL_API AWeaponRanged : public AWeaponBase
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ARangedWeapon();
+	AWeaponRanged();
 
 	virtual void UseWeapon() override;
 

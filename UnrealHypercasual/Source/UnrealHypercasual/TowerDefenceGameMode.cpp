@@ -3,7 +3,7 @@
 
 #include "TowerDefenceGameMode.h"
 
-#include "EnemyCharacter.h"
+#include "CharacterEnemy.h"
 #include "Tower.h"
 #include "TowerDefencePlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,7 +22,7 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 		
 		GameOver(false);
 	}
-	else if (AEnemyCharacter* KilledEnemy = Cast<AEnemyCharacter>(DeadActor))
+	else if (ACharacterEnemy* KilledEnemy = Cast<ACharacterEnemy>(DeadActor))
 	{
 		KilledEnemy->HandleDestruction();
 		
@@ -60,31 +60,32 @@ void ATowerDefenceGameMode::HandleGameStart()
 	PlayerController = Cast<ATowerDefencePlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 
 	StartGame();
-	
-	if (PlayerController)
-	{
-		PlayerController->SetPlayerEnabledState(false);
 
-		// Begin play timer...
-		FTimerHandle PlayerEnabledTimerHandle;
-
-		const FTimerDelegate PlayerEnableTimerDelegate = FTimerDelegate::CreateUObject(
-			PlayerController,
-			&ATowerDefencePlayerController::SetPlayerEnabledState,
-			true);
-		
-		GetWorldTimerManager().SetTimer(
-			PlayerEnabledTimerHandle,
-			PlayerEnableTimerDelegate,
-			StartDelay,
-			false);
-	}
+	// TODO: Better implement a game start function
+	//if (PlayerController)
+	//{
+	//	PlayerController->SetPlayerEnabledState(false);
+	//
+	//	// Begin play timer...
+	//	FTimerHandle PlayerEnabledTimerHandle;
+	//
+	//	const FTimerDelegate PlayerEnableTimerDelegate = FTimerDelegate::CreateUObject(
+	//		PlayerController,
+	//		&ATowerDefencePlayerController::SetPlayerEnabledState,
+	//		true);
+	//	
+	//	GetWorldTimerManager().SetTimer(
+	//		PlayerEnabledTimerHandle,
+	//		PlayerEnableTimerDelegate,
+	//		StartDelay,
+	//		false);
+	//}
 }
 
 int32 ATowerDefenceGameMode::GetTargetEnemyCount()
 {
 	TArray<AActor*> Enemies;
-	UGameplayStatics::GetAllActorsOfClass(this, AEnemyCharacter::StaticClass(), Enemies);
+	UGameplayStatics::GetAllActorsOfClass(this, ACharacterEnemy::StaticClass(), Enemies);
 
 	return Enemies.Num();
 }

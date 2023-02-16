@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FriendlyCharacter.h"
-#include "FriendlyCharacter_Turret.generated.h"
+#include "CharacterFriendly.h"
+#include "CharacterFriendly_Turret.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNREALHYPERCASUAL_API AFriendlyCharacter_Turret : public AFriendlyCharacter
+class UNREALHYPERCASUAL_API ACharacterFriendly_Turret : public ACharacterFriendly
 {
 	GENERATED_BODY()
 
 public:
-	AFriendlyCharacter_Turret();
+	ACharacterFriendly_Turret();
 
 
 

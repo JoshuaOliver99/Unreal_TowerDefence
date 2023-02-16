@@ -3,18 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyCharacter.h"
-#include "EnemyCharacter_Kamikaze.generated.h"
+#include "CharacterEnemy.h"
+#include "CharacterEnemy_Kamikaze.generated.h"
 
 /**
  * Contains Kamikaze() to cause this Actor to ApplyRadialDamageWithFalloff() just before Destroying.
  */
 UCLASS()
-class UNREALHYPERCASUAL_API AEnemyCharacter_Kamikaze : public AEnemyCharacter
+class UNREALHYPERCASUAL_API ACharacterEnemy_Kamikaze : public ACharacterEnemy
 {
 	GENERATED_BODY()
 
 public:
+	// Causes this Enemy to do radial damage then destroy
 	void Kamikaze();
 
 private:

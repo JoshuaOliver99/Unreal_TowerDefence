@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RangedWeapon.h"
+#include "WeaponRanged.h"
 
 #include "Projectile.h"
 
-ARangedWeapon::ARangedWeapon()
+AWeaponRanged::AWeaponRanged()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -15,7 +15,7 @@ ARangedWeapon::ARangedWeapon()
 	ProjectileSpawnPoint->SetupAttachment(WeaponMesh);
 }
 
-void ARangedWeapon::UseWeapon()
+void AWeaponRanged::UseWeapon()
 {
 	Super::UseWeapon();
 

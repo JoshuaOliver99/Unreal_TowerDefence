@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
-#include "FriendlyCharacter.generated.h"
+#include "CharacterFriendly.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNREALHYPERCASUAL_API AFriendlyCharacter : public ACharacterBase
+class UNREALHYPERCASUAL_API ACharacterFriendly : public ACharacterBase
 {
 	GENERATED_BODY()
 	

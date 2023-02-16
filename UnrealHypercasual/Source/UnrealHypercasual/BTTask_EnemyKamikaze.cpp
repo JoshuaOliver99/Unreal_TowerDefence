@@ -4,7 +4,7 @@
 #include "BTTask_EnemyKamikaze.h"
 
 #include "AIController.h"
-#include "EnemyCharacter_Kamikaze.h"
+#include "CharacterEnemy_Kamikaze.h"
 #include "NavigationSystem.h"
 #include "Tower.h"
 #include "TowerDefenceGameMode.h"
@@ -22,7 +22,7 @@ EBTNodeResult::Type UBTTask_EnemyKamikaze::ExecuteTask(UBehaviorTreeComponent& O
 
 	
 	// Get Kamikaze Enemy
-	AEnemyCharacter_Kamikaze* KamikazeEnemy = Cast<AEnemyCharacter_Kamikaze>(OwnerComp.GetAIOwner()->GetCharacter());
+	ACharacterEnemy_Kamikaze* KamikazeEnemy = Cast<ACharacterEnemy_Kamikaze>(OwnerComp.GetAIOwner()->GetCharacter());
 	if (KamikazeEnemy == nullptr)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);

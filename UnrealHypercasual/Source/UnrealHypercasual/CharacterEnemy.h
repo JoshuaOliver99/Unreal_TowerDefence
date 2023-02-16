@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
-#include "EnemyCharacter.generated.h"
+#include "CharacterEnemy.generated.h"
 
 UCLASS()
-class UNREALHYPERCASUAL_API AEnemyCharacter : public ACharacterBase
+class UNREALHYPERCASUAL_API ACharacterEnemy : public ACharacterBase
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AEnemyCharacter();
+	ACharacterEnemy();
 
 protected:
 	// Called when the game starts or when spawned

@@ -4,7 +4,7 @@
 #include "Turret.h"
 
 // My Includes
-#include "EnemyCharacter.h"
+#include "CharacterEnemy.h"
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -90,7 +90,7 @@ void ATurret::GetClosestEnemy()
 {
 	// Find all enemies
 	TArray<AActor*> FoundEnemies;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyCharacter::StaticClass(), FoundEnemies);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterEnemy::StaticClass(), FoundEnemies);
 	
 	if (FoundEnemies.IsEmpty() == false)
 	{

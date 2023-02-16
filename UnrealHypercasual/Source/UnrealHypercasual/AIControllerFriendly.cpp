@@ -1,20 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "FriendlyAIController.h"
+#include "AIControllerFriendly.h"
 
 #include "CharacterBase.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISense_Sight.h"
 
-AFriendlyAIController::AFriendlyAIController()
+AAIControllerFriendly::AAIControllerFriendly()
 {
 	// Create Default Components
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component"));
 	
 }
 
-void AFriendlyAIController::OnPerceptionRegistered(const TArray<AActor*>& UpdatedActors)
+void AAIControllerFriendly::OnPerceptionRegistered(const TArray<AActor*>& UpdatedActors)
 {
 	// TODO: Debug
 	for (int i = 0; i < UpdatedActors.Num(); ++i)
@@ -42,19 +42,19 @@ void AFriendlyAIController::OnPerceptionRegistered(const TArray<AActor*>& Update
 	}
 }
 
-void AFriendlyAIController::BeginPlay()
+void AAIControllerFriendly::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// Delegates
-	PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AFriendlyAIController::OnPerceptionRegistered);
+	PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AAIControllerFriendly::OnPerceptionRegistered);
 
 	// Timers
-	GetWorldTimerManager().SetTimer(UpdateClosestEnemyTimerHandle, this, &AFriendlyAIController::UpdateClosestEnemy, UpdateClosestEnemyRate, true);
-	GetWorldTimerManager().SetTimer(UseWeaponTimerHandle, this, &AFriendlyAIController::UseWeapon, UseWeaponRate, true); // TODO: move this to tick?
+	GetWorldTimerManager().SetTimer(UpdateClosestEnemyTimerHandle, this, &AAIControllerFriendly::UpdateClosestEnemy, UpdateClosestEnemyRate, true);
+	GetWorldTimerManager().SetTimer(UseWeaponTimerHandle, this, &AAIControllerFriendly::UseWeapon, UseWeaponRate, true); // TODO: move this to tick?
 }
 
-void AFriendlyAIController::UpdateClosestEnemy()
+void AAIControllerFriendly::UpdateClosestEnemy()
 {
 	if (SeenActors.Num() <= 0)
 	{
@@ -74,7 +74,7 @@ void AFriendlyAIController::UpdateClosestEnemy()
 }
 
 
-void AFriendlyAIController::UseWeapon()
+void AAIControllerFriendly::UseWeapon()
 {
 	ACharacterBase* AICharacter = Cast<ACharacterBase>(GetCharacter());
 	if (AICharacter && ClosestEnemy)

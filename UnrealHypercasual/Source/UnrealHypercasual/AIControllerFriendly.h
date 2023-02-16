@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "AIControllerBase.h"
-#include "FriendlyAIController.generated.h"
+#include "AIControllerFriendly.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNREALHYPERCASUAL_API AFriendlyAIController : public AAIControllerBase
+class UNREALHYPERCASUAL_API AAIControllerFriendly : public AAIControllerBase
 {
 	GENERATED_BODY()
 
 public:
-	AFriendlyAIController();
+	AAIControllerFriendly();
 
 	UFUNCTION()
 	void OnPerceptionRegistered(const TArray<AActor*>& UpdatedActors);
