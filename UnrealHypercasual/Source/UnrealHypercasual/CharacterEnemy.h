@@ -25,4 +25,14 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+	// TODO: Review - Enemy costs
+private:
+	UPROPERTY(EditDefaultsOnly)
+	int32 EnemySpawnCost = 20;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	int32 GetEnemySpawnCost() {return EnemySpawnCost;}
 };

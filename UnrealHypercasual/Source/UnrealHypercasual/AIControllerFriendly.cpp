@@ -80,8 +80,6 @@ void AAIControllerFriendly::OnClosestEnemyDestroyed(AActor* DestroyedActor)
 	{
 		EnemyInSight.Remove(Cast<ACharacterEnemy>(ClosestEnemy));
 	}
-
-	ClosestEnemy->OnDestroyed.RemoveDynamic(this, &AAIControllerFriendly::OnClosestEnemyDestroyed);
 }
 
 void AAIControllerFriendly::UseWeapon()

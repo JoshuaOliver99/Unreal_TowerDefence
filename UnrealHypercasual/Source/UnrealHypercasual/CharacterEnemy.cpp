@@ -15,6 +15,12 @@ ACharacterEnemy::ACharacterEnemy()
 void ACharacterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Initial Error Check
+	if (EnemySpawnCost < 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s EnemySpawnCost is below 0!"), *GetActorNameOrLabel());
+	}
 	
 }
 

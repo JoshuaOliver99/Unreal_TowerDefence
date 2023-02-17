@@ -21,8 +21,7 @@ UBTTask_FindLocationNearTower::UBTTask_FindLocationNearTower()
 EBTNodeResult::Type UBTTask_FindLocationNearTower::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	Super::ExecuteTask(OwnerComp, NodeMemory);
-
-
+	
 	// Get AI Pawn
 	AAIController* AIController{OwnerComp.GetAIOwner()};
 
