@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+UnrealHypercasual/Content/RuralAustralia/StaticMeshes/Vegetation/Log_L_01/T_Log_L_01_CA.uasset filter=lfs diff=lfs merge=lfs -text
+UnrealHypercasual/Content/RuralAustralia/StaticMeshes/Vegetation/Log_L_01/T_Log_L_01_NA.uasset filter=lfs diff=lfs merge=lfs -text
