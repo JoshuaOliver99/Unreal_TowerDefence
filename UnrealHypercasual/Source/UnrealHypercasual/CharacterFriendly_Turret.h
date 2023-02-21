@@ -22,7 +22,7 @@ public:
 	
 private:
 	// TODO
-	// Check what's needed here. I copy/pasted
+	// Check what's needed here. I copy/pasted (probs not much)
 	UPROPERTY(EditInstanceOnly, Category = "Combat")
 	float FireRange = 1000.f;
 
@@ -42,4 +42,10 @@ private:
 	FTimerHandle UpdateEnemiesArray;
 	float UpdateEnemiesRate = 0.5f;
 	bool IsCheckingForEnemy = false;
+
+
+	// TODO Check this - Grabbable functionality
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UGrabbableActorComponent* GrabbableActorComponent;
 };

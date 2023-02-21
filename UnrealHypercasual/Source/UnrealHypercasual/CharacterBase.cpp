@@ -2,13 +2,11 @@
 
 
 #include "CharacterBase.h"
+
+#include "GrabberComponent.h"
 #include "HealthComponent.h"
 #include "WeaponBase.h"
-#include "Perception/AIPerceptionComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include "Perception/AISenseConfig.h"
-#include "Perception/AISenseConfig_Sight.h"
-#include "Perception/AISense_Sight.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
