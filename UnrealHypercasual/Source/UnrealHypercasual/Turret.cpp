@@ -4,9 +4,9 @@
 #include "Turret.h"
 
 // My Includes
-#include "CharacterEnemy.h"
-#include "Projectile.h"
+#include "Characters/CharacterEnemy.h"
 #include "Kismet/GameplayStatics.h"
+#include "Weapons/Projectile.h"
 
 
 ATurret::ATurret()
