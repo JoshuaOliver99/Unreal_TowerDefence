@@ -82,17 +82,13 @@ void ATowerDefenceGameMode::GameOver(bool bWonGame)
 
 void ATowerDefenceGameMode::HandleGameStart()
 {
-	// Initial Setup
+	// Get PlayerController*
 	PlayerController = Cast<ATowerDefencePlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-
-
-	// Remaining
-	//EnemyCount = GetTargetEnemyCount();
 	
-	// Initialize Tower
+	// Get Tower*
 	Tower = Cast<ATower>(UGameplayStatics::GetActorOfClass(GetWorld(), ATower::StaticClass()));
 
-	// Initialize EnemySpawnPoints
+	// Get EnemySpawnPoints*
 	TArray<AActor*> SpawnPoints;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawn::StaticClass(), SpawnPoints);
 	EnemySpawnPoints.Empty();
@@ -105,6 +101,9 @@ void ATowerDefenceGameMode::HandleGameStart()
 		UE_LOG(LogTemp, Warning, TEXT("%s No EnemySpawnPoints found!"), *GetActorNameOrLabel())
 	}
 
+
+
+	
 	GameState = EGameState::InPlay;
 	
 	// Start the first wave...
@@ -121,8 +120,6 @@ int32 ATowerDefenceGameMode::GetTargetEnemyCount()
 
 void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BEGINNING WAVE: %i!"), WaveNumber);
-	
 	GameState = EGameState::InPlay;
 	
 	// Calculate difficulty budget
@@ -134,9 +131,8 @@ void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 
 	// Spawn all enemies...
 	// TODO: make this on a timer instead of all instantly
-	const int32 SpawnLimit = 100;
+	const int16 SpawnLimit = 100;
 	for (int SpawningEnemy = 0; SpawningEnemy < SpawnLimit; ++SpawningEnemy)
-	//while (DifficultyBudget > 0)
 	{
 		// TODO: make sure that SpawnableEnemyTypes array is ordered by cost!
 		
@@ -169,14 +165,12 @@ void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 		}
 
 		
-		// Record enemies spawned count
+		// Increase enemies spawned count
 		EnemyCount = SpawningEnemy + 1;
 		
 		// Break if unable to spawn
 		break;
 	}                         
-
-
 	
 	// Delete allocated memory...
 	delete SpawnPointLocation;

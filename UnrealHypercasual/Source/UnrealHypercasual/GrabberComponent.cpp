@@ -93,9 +93,7 @@ void UGrabberComponent::Grab()
 	UPrimitiveComponent* HitComponent = HitResult.GetComponent();
 	HitComponent->SetSimulatePhysics(true);
 	HitComponent->WakeAllRigidBodies();
-	AActor* HitActor = HitResult.GetActor();
-	//HitActor->Tags.Add("Grabbed");
-	HitActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	HitResult.GetActor()->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 
 
 	// TODO: Make the grabbed object upright always
@@ -124,7 +122,6 @@ void UGrabberComponent::Release()
 	UE_LOG(LogTemp, Warning, TEXT("RELEASE"));
 	
 	AActor* GrabbedActor = PhysicsHandle->GetGrabbedComponent()->GetOwner();
-	//GrabbedActor->Tags.Remove("Grabbed");
 	PhysicsHandle->ReleaseComponent();
 	
 }

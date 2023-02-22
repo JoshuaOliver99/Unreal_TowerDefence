@@ -61,6 +61,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
 	int32 DifficultyBudget = 0;
 
+	
 	// Game properties...
 	enum EGameState
 	{
