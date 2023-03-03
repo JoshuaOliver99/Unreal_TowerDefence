@@ -71,7 +71,7 @@ private:
 	};
 	EGameState GameState;
 	
-	// Wave properties...
+	// ----- Wave properties...
 	
 	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
 	int32 Wave = 1;
@@ -79,14 +79,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
 	float WaveDifficultyMultiplier = 110;
 
-	// Wave delay...
+	// ----- Wave delay...
 	
 	float WaveStartDelay = 30.0f;
 	float TimeUntilWaveStart;
 
 	FTimerHandle WaveCountdownTimerDelegate;
 	
-	// Wave functions...
+	// ----- Wave functions...
 
 	// Begins the wave
 	void BeginWave(int WaveNumber);
@@ -97,5 +97,16 @@ private:
 	// ...
 	void HandleBeginWave();
 
+
+
+
+	// ----- UI
+
+	void UpdateTitleText(FString Text);
 	
+	void UpdatePlayerHealthBar(float PlayerHealthPercentage);
+
+	void UpdateTowerHealthBar(float TowerHealthPercentage);
+
+	void UpdateGoldText(FString Text);
 };

@@ -8,6 +8,7 @@
 #include "TowerDefencePlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
+#include "UnrealHypercasual/UW_TowerDefenceHUD.h"
 #include "UnrealHypercasual/Characters/CharacterEnemy.h"
 
 
@@ -173,8 +174,9 @@ void ATowerDefenceGameMode::WaveCompleted()
 
 void ATowerDefenceGameMode::HandleBeginWave()
 {
+	UpdateTitleText(FString::Printf(TEXT("Time Until Next Wave: %d"), static_cast<int>(TimeUntilWaveStart)));
+	
 	TimeUntilWaveStart --;
-	UE_LOG(LogTemp, Warning, TEXT("Time Until Next Wave %f"), TimeUntilWaveStart);
 	
 	if (TimeUntilWaveStart < 0)
 	{
@@ -182,6 +184,63 @@ void ATowerDefenceGameMode::HandleBeginWave()
 		BeginWave(Wave);
 	}
 }
+
+
+#pragma region UI
+
+void ATowerDefenceGameMode::UpdateTitleText(FString Text)
+{
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+	{
+		TowerDefenceHUD->UpdateTitleText(Text);
+	}
+}
+
+void ATowerDefenceGameMode::UpdatePlayerHealthBar(float PlayerHealthPercentage)
+{
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+	{
+		TowerDefenceHUD->UpdatePlayerHealthBar(PlayerHealthPercentage);
+	}
+}
+
+void ATowerDefenceGameMode::UpdateTowerHealthBar(float TowerHealthPercentage)
+{
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+	{
+		TowerDefenceHUD->UpdateTowerHealthBar(TowerHealthPercentage);
+	}
+}
+
+void ATowerDefenceGameMode::UpdateGoldText(FString Text)
+{
+	if (PlayerController == nullptr)
+	{
+		return;
+	}
+
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+	{
+		TowerDefenceHUD->UpdateGoldText(Text);
+	}
+}
+
+#pragma endregion UI
 
 
 // TODO: Better implement a game start function
