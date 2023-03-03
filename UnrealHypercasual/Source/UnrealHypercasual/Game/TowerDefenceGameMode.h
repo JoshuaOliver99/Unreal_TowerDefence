@@ -29,7 +29,7 @@ protected:
 	//void StartGame();
 
 	// Called upon all towers becoming destroyed
-	void GameOver(bool bWonGame);
+	void GameOver();
 	
 private:
 
@@ -48,21 +48,21 @@ private:
 
 
 
-
-	// TODO: Review these additions... Enemy Spawning
+	// TODO: Review these additions...
+	
+	// Enemy Spawning...
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
 	TArray<TSubclassOf<class ACharacterEnemy>> SpawnableEnemyTypes;
 
 	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
 	TArray<class AEnemySpawn*> EnemySpawnPoints;
-
 	
 	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
 	int32 DifficultyBudget = 0;
-
 	
 	// Game properties...
+
 	enum EGameState
 	{
 		Ended,
@@ -70,7 +70,6 @@ private:
 		BetweenRounds
 	};
 	EGameState GameState;
-
 	
 	// Wave properties...
 	
@@ -80,7 +79,23 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
 	float WaveDifficultyMultiplier = 110;
 
-	// Wave functions
+	// Wave delay...
+	
+	float WaveStartDelay = 30.0f;
+	float TimeUntilWaveStart;
 
+	FTimerHandle WaveCountdownTimerDelegate;
+	
+	// Wave functions...
+
+	// Begins the wave
 	void BeginWave(int WaveNumber);
+
+	// Called when a Wave is successfully completed 
+	void WaveCompleted();
+
+	// ...
+	void HandleBeginWave();
+
+	
 };

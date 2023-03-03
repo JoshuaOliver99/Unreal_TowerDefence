@@ -24,7 +24,7 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 		}
 
 		// Lose
-		GameOver(false);
+		GameOver();
 	}
 	else if (ACharacterEnemy* KilledEnemy = Cast<ACharacterEnemy>(DeadActor))
 	{
@@ -37,13 +37,12 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 			// TODO: add a timer to ensure the level is actually won!
 			if (GameState != InPlay)
 			{
-				GameOver(false);
+				GameOver();
 				return;
 			}
 			
-
-			// Win
-			GameOver(true);
+			
+			WaveCompleted();
 		}
 	}
 }
@@ -54,28 +53,12 @@ void ATowerDefenceGameMode::BeginPlay()
 	HandleGameStart();
 }
 
-void ATowerDefenceGameMode::GameOver(bool bWonGame)
+void ATowerDefenceGameMode::GameOver()
 {
-	if (bWonGame)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Round Cleared!"));
+	UE_LOG(LogTemp, Warning, TEXT("Tower Destroyed! Game Over..."));
 
-
-		// TODO: Implement breather period for purchasing etc...
-		GameState = EGameState::BetweenRounds;
-
-
-		// TODO: Implement method of beginning the next wave manually...																	
-		Wave++;
-		BeginWave(Wave);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Tower Destroyed! Game Over..."));
-
-		GameState = EGameState::Ended;
-	}
-
+	GameState = EGameState::Ended;
+	
 	// TODO: Add an option for reloading the level
 }
 
@@ -105,9 +88,9 @@ void ATowerDefenceGameMode::HandleGameStart()
 	
 	GameState = EGameState::InPlay;
 	
-	// Start the first wave...
 	BeginWave(Wave);
 }
+
 
 int32 ATowerDefenceGameMode::GetTargetEnemyCount()
 {
@@ -116,6 +99,7 @@ int32 ATowerDefenceGameMode::GetTargetEnemyCount()
 
 	return Enemies.Num();
 }
+
 
 void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 {
@@ -155,7 +139,7 @@ void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 			}
 		}
 
-		// Repeat this loop if sufficient budget remaining...
+		// Repeat if sufficient budget remaining...
 		TSubclassOf<ACharacterEnemy> MostExpensiveEnemyClass = SpawnableEnemyTypes[0];
 		ACharacterEnemy* MostExpensiveEnemyInstance = MostExpensiveEnemyClass.GetDefaultObject();
 		if (DifficultyBudget >= MostExpensiveEnemyInstance->GetEnemySpawnCost())
@@ -164,15 +148,39 @@ void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 		}
 
 		
-		// Increase enemies spawned count
 		EnemyCount = SpawningEnemy + 1;
-		
-		// Break if unable to spawn
 		break;
 	}                         
 	
-	// Delete allocated memory...
+	// Delete allocated memory... (used "new")
 	delete SpawnPointLocation;
+}
+
+void ATowerDefenceGameMode::WaveCompleted()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Wave %i Completed!"), Wave);
+
+	Wave++;
+	GameState = EGameState::BetweenRounds;
+	
+	// ----- Wave Start Delay
+	TimeUntilWaveStart = WaveStartDelay;
+	GetWorldTimerManager().SetTimer(WaveCountdownTimerDelegate, this, &ATowerDefenceGameMode::HandleBeginWave, 1.0f, true);
+
+
+	// TODO: Implement method of beginning the next wave manually (e.g. "press Enter")...																	
+}
+
+void ATowerDefenceGameMode::HandleBeginWave()
+{
+	TimeUntilWaveStart --;
+	UE_LOG(LogTemp, Warning, TEXT("Time Until Next Wave %f"), TimeUntilWaveStart);
+	
+	if (TimeUntilWaveStart < 0)
+	{
+		GetWorldTimerManager().ClearTimer(WaveCountdownTimerDelegate);
+		BeginWave(Wave);
+	}
 }
 
 
