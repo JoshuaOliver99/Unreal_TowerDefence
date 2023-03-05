@@ -27,7 +27,10 @@ public:
 	void UpdateTowerHealthBar(float TowerHealthPercentage);
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
-	void UpdateGoldText(FString Text);
+	void UpdateGoldText(int GoldBalance);
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void UpdateWaveText(int WaveNum);
 	
 private:
 	class UTextBlock* TitleText;
@@ -37,4 +40,6 @@ private:
 	class UProgressBar* TowerHealthBar;
 
 	class UTextBlock* GoldText;
+	
+	class UTextBlock* WaveText;
 };

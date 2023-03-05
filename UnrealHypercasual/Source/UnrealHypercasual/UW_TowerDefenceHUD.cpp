@@ -14,6 +14,7 @@ void UUW_TowerDefenceHUD::NativeConstruct()
 	PlayerHealthBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("PlayerHealthBar")));
 	TowerHealthBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("TowerHealthBar")));
 	GoldText = Cast<UTextBlock>(GetWidgetFromName(TEXT("GoldText")));
+	WaveText = Cast<UTextBlock>(GetWidgetFromName(TEXT("WaveText")));
 }
 
 void UUW_TowerDefenceHUD::UpdateTitleText(FString NewText)
@@ -40,13 +41,20 @@ void UUW_TowerDefenceHUD::UpdateTowerHealthBar(float TowerHealthPercentage)
 	}
 }
 
-void UUW_TowerDefenceHUD::UpdateGoldText(FString Text)
+void UUW_TowerDefenceHUD::UpdateGoldText(int GoldBalance)
 {
 	if (GoldText)
 	{
-		GoldText->SetText(FText::FromString(Text));
+		GoldText->SetText(FText::Format(FText::FromString("Gold: {0}"), FText::AsNumber(GoldBalance)));
 	}
 }
 
+void UUW_TowerDefenceHUD::UpdateWaveText(int WaveNum)
+{
+	if (WaveText)
+	{
+		WaveText->SetText(FText::Format(FText::FromString("Wave: {0}"), FText::AsNumber(WaveNum)));
+	}
+}
 
 

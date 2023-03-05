@@ -27,4 +27,16 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
+
+
+
+	// Weapon stats
+	// TODO: Refactor
+
+private:
+	float Range = 0.f;
+
+	float Damage = 0.0f;
 };

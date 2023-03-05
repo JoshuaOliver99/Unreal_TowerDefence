@@ -24,9 +24,6 @@ public:
 protected:
 	// Native event for when play begins for this actor
 	virtual void BeginPlay() override;
-	
-	//UFUNCTION(BlueprintImplementableEvent)
-	//void StartGame();
 
 	// Called upon all towers becoming destroyed
 	void GameOver();
@@ -43,14 +40,14 @@ private:
 	//float StartDelay = 3.f;
 	void HandleGameStart();
 
-	int32 GetTargetEnemyCount();
+	int32 GetTargetEnemyCount() const;
 	int32 EnemyCount = 0;
 
 
 
 	// TODO: Review these additions...
 	
-	// Enemy Spawning...
+	// ----- Enemy Spawning...
 
 	UPROPERTY(EditAnywhere, Category = "Gameplay")
 	TArray<TSubclassOf<class ACharacterEnemy>> SpawnableEnemyTypes;
@@ -61,7 +58,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
 	int32 DifficultyBudget = 0;
 	
-	// Game properties...
+	// ----- Game properties...
 
 	enum EGameState
 	{
@@ -89,24 +86,29 @@ private:
 	// ----- Wave functions...
 
 	// Begins the wave
-	void BeginWave(int WaveNumber);
+	void BeginWave();
 
 	// Called when a Wave is successfully completed 
 	void WaveCompleted();
 
 	// ...
-	void HandleBeginWave();
+	void WaveCountdownDelegate();
 
 
 
 
 	// ----- UI
 
+	class UUW_TowerDefenceHUD* GetHUD() const;
+	
 	void UpdateTitleText(FString Text);
+	void ClearTitleText();
 	
 	void UpdatePlayerHealthBar(float PlayerHealthPercentage);
 
 	void UpdateTowerHealthBar(float TowerHealthPercentage);
 
-	void UpdateGoldText(FString Text);
+	void UpdateGoldText(int GoldBalance);
+	
+	void UpdateWaveText(int CurrentWave);
 };

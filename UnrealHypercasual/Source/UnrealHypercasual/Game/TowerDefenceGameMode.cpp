@@ -42,7 +42,6 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 				return;
 			}
 			
-			
 			WaveCompleted();
 		}
 	}
@@ -56,9 +55,10 @@ void ATowerDefenceGameMode::BeginPlay()
 
 void ATowerDefenceGameMode::GameOver()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Tower Destroyed! Game Over..."));
-
 	GameState = EGameState::Ended;
+
+	// TODO: Replace this with the GameOver Widget Screen
+	//UpdateTitleText(FString::Printf(TEXT("Game Over!")));
 	
 	// TODO: Add an option for reloading the level
 }
@@ -84,16 +84,16 @@ void ATowerDefenceGameMode::HandleGameStart()
 		UE_LOG(LogTemp, Warning, TEXT("%s No EnemySpawnPoints found!"), *GetActorNameOrLabel())
 	}
 
-
-
 	
-	GameState = EGameState::InPlay;
-	
-	BeginWave(Wave);
+	Wave = 1;
+
+	// Ensure other Actors are initialised before beginning (5s initial start delay)
+	FTimerHandle DelayBeginWaveTimerHandle;
+	GetWorldTimerManager().SetTimer(DelayBeginWaveTimerHandle, this, &ATowerDefenceGameMode::BeginWave, 5.0f, false);
 }
 
 
-int32 ATowerDefenceGameMode::GetTargetEnemyCount()
+int32 ATowerDefenceGameMode::GetTargetEnemyCount() const
 {
 	TArray<AActor*> Enemies;
 	UGameplayStatics::GetAllActorsOfClass(this, ACharacterEnemy::StaticClass(), Enemies);
@@ -102,12 +102,22 @@ int32 ATowerDefenceGameMode::GetTargetEnemyCount()
 }
 
 
-void ATowerDefenceGameMode::BeginWave(int WaveNumber)
+void ATowerDefenceGameMode::BeginWave()
 {
 	GameState = EGameState::InPlay;
+
+	
+	UpdateTitleText(FString::Printf(TEXT("Wave Incoming!")));
+	UpdateWaveText(Wave);
+
+	// Clear Title Text after 3s
+	FTimerHandle ClearWaveTextTimerHandle;
+	GetWorldTimerManager().SetTimer(ClearWaveTextTimerHandle, this, &ATowerDefenceGameMode::ClearTitleText, 3.0f, false);
+
+	
 	
 	// Calculate difficulty budget
-	DifficultyBudget = WaveNumber * WaveDifficultyMultiplier;
+	DifficultyBudget = Wave * WaveDifficultyMultiplier;
 
 	// Calculate chosen spawn point 
 	const int32 SpawnPointIndex = FMath::RandRange(0, EnemySpawnPoints.Num() - 1);
@@ -147,7 +157,6 @@ void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 		{
 			continue;
 		}
-
 		
 		EnemyCount = SpawningEnemy + 1;
 		break;
@@ -157,22 +166,18 @@ void ATowerDefenceGameMode::BeginWave(int WaveNumber)
 	delete SpawnPointLocation;
 }
 
+// TODO: Implement method of beginning the next wave manually (e.g. "press Enter")...																	
 void ATowerDefenceGameMode::WaveCompleted()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Wave %i Completed!"), Wave);
-
 	Wave++;
 	GameState = EGameState::BetweenRounds;
-	
+
 	// ----- Wave Start Delay
 	TimeUntilWaveStart = WaveStartDelay;
-	GetWorldTimerManager().SetTimer(WaveCountdownTimerDelegate, this, &ATowerDefenceGameMode::HandleBeginWave, 1.0f, true);
-
-
-	// TODO: Implement method of beginning the next wave manually (e.g. "press Enter")...																	
+	GetWorldTimerManager().SetTimer(WaveCountdownTimerDelegate, this, &ATowerDefenceGameMode::WaveCountdownDelegate, 1.0f, true);
 }
 
-void ATowerDefenceGameMode::HandleBeginWave()
+void ATowerDefenceGameMode::WaveCountdownDelegate()
 {
 	UpdateTitleText(FString::Printf(TEXT("Time Until Next Wave: %d"), static_cast<int>(TimeUntilWaveStart)));
 	
@@ -181,34 +186,41 @@ void ATowerDefenceGameMode::HandleBeginWave()
 	if (TimeUntilWaveStart < 0)
 	{
 		GetWorldTimerManager().ClearTimer(WaveCountdownTimerDelegate);
-		BeginWave(Wave);
+		BeginWave();
 	}
 }
 
 
+
+
 #pragma region UI
 
-void ATowerDefenceGameMode::UpdateTitleText(FString Text)
+UUW_TowerDefenceHUD* ATowerDefenceGameMode::GetHUD() const
 {
 	if (PlayerController == nullptr)
 	{
-		return;
+		return nullptr;
 	}
 
-	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+	return Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud());
+}
+
+void ATowerDefenceGameMode::UpdateTitleText(FString Text)
+{
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
 		TowerDefenceHUD->UpdateTitleText(Text);
 	}
 }
 
+void ATowerDefenceGameMode::ClearTitleText()
+{
+	UpdateTitleText("");
+}
+
 void ATowerDefenceGameMode::UpdatePlayerHealthBar(float PlayerHealthPercentage)
 {
-	if (PlayerController == nullptr)
-	{
-		return;
-	}
-
-	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
 		TowerDefenceHUD->UpdatePlayerHealthBar(PlayerHealthPercentage);
 	}
@@ -216,27 +228,25 @@ void ATowerDefenceGameMode::UpdatePlayerHealthBar(float PlayerHealthPercentage)
 
 void ATowerDefenceGameMode::UpdateTowerHealthBar(float TowerHealthPercentage)
 {
-	if (PlayerController == nullptr)
-	{
-		return;
-	}
-
-	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
 		TowerDefenceHUD->UpdateTowerHealthBar(TowerHealthPercentage);
 	}
 }
 
-void ATowerDefenceGameMode::UpdateGoldText(FString Text)
+void ATowerDefenceGameMode::UpdateGoldText(int GoldBalance)
 {
-	if (PlayerController == nullptr)
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
-		return;
+		TowerDefenceHUD->UpdateGoldText(GoldBalance);
 	}
+}
 
-	if (UUW_TowerDefenceHUD* TowerDefenceHUD = Cast<UUW_TowerDefenceHUD>(PlayerController->GetHud()))
+void ATowerDefenceGameMode::UpdateWaveText(int CurrentWave)
+{
+	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
-		TowerDefenceHUD->UpdateGoldText(Text);
+		TowerDefenceHUD->UpdateWaveText(CurrentWave);
 	}
 }
 

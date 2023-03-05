@@ -21,6 +21,12 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+
+
+#pragma region UI
+
+public:
+	class UUserWidget* GetHud() const {return HUD;}
 	
 private:
 	UPROPERTY(EditAnywhere)
@@ -30,20 +36,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> WinScreenClass;
 	
-	//UPROPERTY(EditAnywhere)
-	//float RestartDelay = 5.f;
-
-	//FTimerHandle RestartTimer;
-
 	UPROPERTY()
 	UUserWidget* HUD;
 
-
-
-	// TODO: Review
-	public:
-	class UUserWidget* GetHud() const {return HUD;}
-	//class UUserWidget* GetLoseScreen() const {return LoseScreenClass;}
-	//class UUserWidget* GetWinScreen() const {return WinScreenClass;}
-	//void SetPlayerEnabledState(bool bPlayerEnabled);
+#pragma endregion UI
 };
