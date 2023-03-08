@@ -3,6 +3,7 @@
 
 #include "UW_Shop.h"
 
+#include "UW_ShopItem.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 
@@ -13,15 +14,10 @@ void UUW_Shop::NativeConstruct()
 	
 	ShopTitleText = Cast<UTextBlock>(GetWidgetFromName(TEXT("ShopTitleText")));
 	ShopItemGrid = Cast<UUniformGridPanel>(GetWidgetFromName(TEXT("ShopItemGrid")));
-
-
-
-
-	UpdateShopItemGrid();
 }
 
 
-void UUW_Shop::UpdateShopTitleText(FString Text)
+void UUW_Shop::SetShopTitleText(FString Text)
 {
 	if (ShopTitleText)
 	{
@@ -29,15 +25,33 @@ void UUW_Shop::UpdateShopTitleText(FString Text)
 	}
 }
 
-void UUW_Shop::UpdateShopItemGrid()
+void UUW_Shop::SetShopItemGrid(const TArray<AItem*>& Items)
 {
+
+	
 	if (ShopItemGrid)
 	{
+		ShopItemGrid->ClearChildren();
+		
 		if (ShopItemWidgetClass)
 		{
-			if (UUserWidget* ShopItemWidget = CreateWidget<UUserWidget>(this, ShopItemWidgetClass))
+	
+			// Add new items to the grid
+			for (int i = 0; i < Items.Num(); ++i)
 			{
-				ShopItemGrid->AddChildToUniformGrid(ShopItemWidget, 0, 0);
+				
+				if (UUW_ShopItem* ShopItemWidget = CreateWidget<UUW_ShopItem>(this, ShopItemWidgetClass))
+				{
+					constexpr int RowSize = 4;
+					const int RowNumber = i / RowSize;
+					const int ColumnNumber = i % RowSize;
+
+					ShopItemGrid->AddChildToUniformGrid(ShopItemWidget, RowNumber, ColumnNumber);
+					ShopItemWidget->SetShopItem(Items[i]);
+
+					
+				}
+				
 			}
 		}
 	}

@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "Shop.generated.h"
 
+class UBoxComponent;
+class UCameraComponent;
+class UUW_Shop;
+
 UCLASS()
 class UNREALHYPERCASUAL_API AShop : public AActor
 {
@@ -36,15 +40,17 @@ protected:
 	class UStaticMeshComponent* ShopMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UBoxComponent* ShopTrigger;
+	UBoxComponent* ShopTrigger;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* ShopCamera;
+	UCameraComponent* ShopCamera;
 
 private:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> ShopWidgetClass;
-	UUserWidget* ShopWidget;
+	TSubclassOf<UUserWidget> ShopWidgetClass;
+	UUW_Shop* ShopWidget;
 
-
+	UFUNCTION()
+	void OnShopItemClicked(AItem* Item);
 };
+

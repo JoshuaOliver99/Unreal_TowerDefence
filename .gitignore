@@ -1,0 +1,17 @@
+# Rider files
+*.csproj.Rider
+*.sln.Rider
+*.cs.Rider
+.idea/
+*.sln.DotSettings
+*.suo
+*.user
+
+# Unreal Engine files
+Intermediate/
+Saved/
+DerivedDataCache/
+Binaries/
+Build/
+*.pdb
+*.exp

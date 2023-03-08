@@ -97,6 +97,25 @@ private:
 
 
 
+	// ----- Shop
+
+public:
+	TArray<TSubclassOf<class AItem>> GetShopItems() const { return ShopItems; }
+
+private:
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<class AItem>> SpawnableShopItems;
+	
+	TArray<TSubclassOf<class AItem>>  ShopItems;
+	
+	void GenerateShopStock();
+
+
+
+
+
+
+
 	// ----- UI
 
 	class UUW_TowerDefenceHUD* GetHUD() const;

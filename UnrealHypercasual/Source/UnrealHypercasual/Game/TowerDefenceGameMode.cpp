@@ -84,6 +84,8 @@ void ATowerDefenceGameMode::HandleGameStart()
 		UE_LOG(LogTemp, Warning, TEXT("%s No EnemySpawnPoints found!"), *GetActorNameOrLabel())
 	}
 
+
+	GenerateShopStock();
 	
 	Wave = 1;
 
@@ -191,10 +193,26 @@ void ATowerDefenceGameMode::WaveCountdownDelegate()
 }
 
 
+#pragma region Shop
+void ATowerDefenceGameMode::GenerateShopStock()
+{
+	if (SpawnableShopItems.Num() == 0)
+	{
+		return;
+	}
+	
+	ShopItems.Empty();
+
+	for (int i = 0; i < 8; ++i)
+	{
+		const int ItemSpawning  = FMath::RandRange(0, SpawnableShopItems.Num() - 1);
+		ShopItems.Add(SpawnableShopItems[ItemSpawning]);
+	}
+}
+#pragma endregion Shop
 
 
 #pragma region UI
-
 UUW_TowerDefenceHUD* ATowerDefenceGameMode::GetHUD() const
 {
 	if (PlayerController == nullptr)

@@ -3,10 +3,18 @@
 
 #include "Shop.h"
 
+#include "Item.h"
+#include "UW_Shop.h"
+#include "UW_ShopItem.h"
 #include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/Button.h"
+#include "Components/UniformGridPanel.h"
+#include "Game/TowerDefenceGameMode.h"
 #include "Game/TowerDefencePlayerCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Misc/Build.h"
 
 // Sets default values
 AShop::AShop()
@@ -65,15 +73,33 @@ void AShop::OnShopTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	// ----- Add the UI
 	if (ShopWidgetClass)
 	{
-		ShopWidget = CreateWidget(PlayerController, ShopWidgetClass);
+		ShopWidget = Cast<UUW_Shop>(CreateWidget(PlayerController, ShopWidgetClass));
 
 		if (ShopWidget)
 		{
 			ShopWidget->AddToViewport();
+
+			ATowerDefenceGameMode* GameMode = Cast<ATowerDefenceGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+			if (GameMode)
+			{
+
+				TArray<AItem*> ShopItems;
+				for (int i = 0; i < GameMode->GetShopItems().Num(); ++i)
+				{
+					ShopItems.Add(Cast<AItem>(GameMode->GetShopItems()[i].GetDefaultObject()));
+				}
+				
+				ShopWidget->SetShopItemGrid(ShopItems);
+
+				// Add button delegates
+				UUniformGridPanel* ShopItemGrid = ShopWidget->GetShopItemGrid();
+				for (int i = 0; i < ShopItemGrid->GetChildrenCount(); ++i)
+				{
+					Cast<UUW_ShopItem>(ShopItemGrid->GetChildAt(i))->OnShopItemButtonClicked.AddDynamic(this, &AShop::OnShopItemClicked);
+				}
+			}
 		}
 	}
-	
-
 }
 
 
@@ -104,4 +130,16 @@ inline void AShop::OnShopTriggerEndOverlap(UPrimitiveComponent* OverlappedCompon
 	{
 		ShopWidget->RemoveFromParent();
 	}
+}
+
+
+void AShop::OnShopItemClicked(AItem* Item)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Shop Item Clicked: %s!"), *Item->GetTitle())
+
+	// Try to purchase
+
+
+	// Spawn the Item
+	// Remove from stock
 }

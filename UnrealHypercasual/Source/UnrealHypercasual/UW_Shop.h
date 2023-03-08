@@ -6,6 +6,10 @@
 #include "Blueprint/UserWidget.h"
 #include "UW_Shop.generated.h"
 
+class UTextBlock;
+class UUniformGridPanel;
+class AItem;
+
 /**
  * 
  */
@@ -16,21 +20,19 @@ class UNREALHYPERCASUAL_API UUW_Shop : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
-	
-	UFUNCTION(BlueprintCallable, Category = "Shop")
-	void UpdateShopTitleText(FString Text);
+
+	UTextBlock* GetShopTitleText() const { return ShopTitleText; }
+	void SetShopTitleText(FString Text);
 		
-	UFUNCTION(BlueprintCallable, Category = "Shop")
-	void UpdateShopItemGrid();
+	UUniformGridPanel* GetShopItemGrid() const { return ShopItemGrid; }
+	void SetShopItemGrid(const TArray<AItem*>& Items);
 	
 private:
-	
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> ShopItemWidgetClass;
-	//class UWidget* ShopItemWidget;
+	TSubclassOf<UUserWidget> ShopItemWidgetClass;
 	
-	class UTextBlock* ShopTitleText;
+	UTextBlock* ShopTitleText;
 	
-	class UUniformGridPanel* ShopItemGrid;
+	UUniformGridPanel* ShopItemGrid;
 };
 
