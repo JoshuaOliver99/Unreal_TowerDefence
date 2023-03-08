@@ -9,6 +9,7 @@
 class UBoxComponent;
 class UCameraComponent;
 class UUW_Shop;
+class AItem;
 
 UCLASS()
 class UNREALHYPERCASUAL_API AShop : public AActor
@@ -36,14 +37,17 @@ public:
 	void OnShopTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UStaticMeshComponent* ShopMesh;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* ShopMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* ShopTrigger;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* ShopCamera;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* ItemSpawnPoint;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -51,6 +55,6 @@ private:
 	UUW_Shop* ShopWidget;
 
 	UFUNCTION()
-	void OnShopItemClicked(AItem* Item);
+	void OnShopItemClicked(TSubclassOf<AItem> Item);
 };
 

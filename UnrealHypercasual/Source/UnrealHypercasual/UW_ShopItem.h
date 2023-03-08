@@ -9,7 +9,7 @@
 
 class AItem;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopItemButtonClickedEvent, AItem*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopItemButtonClickedEvent, TSubclassOf<AItem>, Item);
 
 /**
  * 
@@ -23,7 +23,7 @@ public:
 	virtual void NativeConstruct() override;
 
 public:
-	void SetShopItem(AItem* Item);
+	void SetShopItem(TSubclassOf<AItem> ItemClass);
 
 	class UTextBlock* GetShopItemTitle() const { return ShopItemTitleText; }
 	void SetShopItemTitleText(FString Text);
@@ -42,7 +42,7 @@ public:
 	FOnShopItemButtonClickedEvent OnShopItemButtonClicked;
 	
 private:
-	AItem* ShopItem;
+	TSubclassOf<AItem> ShopItemClass;
 	
 	UTextBlock* ShopItemTitleText;
 	

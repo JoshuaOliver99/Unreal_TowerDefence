@@ -30,6 +30,9 @@ AShop::AShop()
 
 	ShopCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Shop Camera Component"));
 	ShopCamera->SetupAttachment(RootComponent);
+
+	ItemSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Item Spawn Point"));
+	ItemSpawnPoint->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -82,17 +85,16 @@ void AShop::OnShopTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 			ATowerDefenceGameMode* GameMode = Cast<ATowerDefenceGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 			if (GameMode)
 			{
-
-				TArray<AItem*> ShopItems;
+				TArray<TSubclassOf<AItem>> ShopItemClasses;
 				for (int i = 0; i < GameMode->GetShopItems().Num(); ++i)
 				{
-					ShopItems.Add(Cast<AItem>(GameMode->GetShopItems()[i].GetDefaultObject()));
+					ShopItemClasses.Add(GameMode->GetShopItems()[i]);
 				}
 				
-				ShopWidget->SetShopItemGrid(ShopItems);
+				ShopWidget->SetShopItemGrid(ShopItemClasses);
 
 				// Add button delegates
-				UUniformGridPanel* ShopItemGrid = ShopWidget->GetShopItemGrid();
+				const UUniformGridPanel* ShopItemGrid = ShopWidget->GetShopItemGrid();
 				for (int i = 0; i < ShopItemGrid->GetChildrenCount(); ++i)
 				{
 					Cast<UUW_ShopItem>(ShopItemGrid->GetChildAt(i))->OnShopItemButtonClicked.AddDynamic(this, &AShop::OnShopItemClicked);
@@ -133,13 +135,31 @@ inline void AShop::OnShopTriggerEndOverlap(UPrimitiveComponent* OverlappedCompon
 }
 
 
-void AShop::OnShopItemClicked(AItem* Item)
+void AShop::OnShopItemClicked(TSubclassOf<AItem> Item)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Shop Item Clicked: %s!"), *Item->GetTitle())
+	if (Item == nullptr)
+	{
+		return;
+	}
 
-	// Try to purchase
+	ATowerDefenceGameMode* GameMode = Cast<ATowerDefenceGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode == nullptr)
+	{
+		return;
+	}
+	
+	// Buy the Item
+	if (GameMode->GetPlayerGold() - Item.GetDefaultObject()->GetValue() < 0)
+	{
+		return;
+	}
+	GameMode->AddPlayerGold(-Item.GetDefaultObject()->GetValue());
 
-
+	
 	// Spawn the Item
-	// Remove from stock
+	const FVector SpawnLocation = ItemSpawnPoint->GetComponentLocation();
+	const FRotator SpawnRotation = ItemSpawnPoint->GetComponentRotation();
+	GetWorld()->SpawnActor(Item.Get(), &SpawnLocation, &SpawnRotation);
+
+	// Remove the Item
 }

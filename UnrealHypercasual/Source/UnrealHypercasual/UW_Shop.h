@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIHelpers.h"
 #include "Blueprint/UserWidget.h"
 #include "UW_Shop.generated.h"
 
@@ -25,7 +26,7 @@ public:
 	void SetShopTitleText(FString Text);
 		
 	UUniformGridPanel* GetShopItemGrid() const { return ShopItemGrid; }
-	void SetShopItemGrid(const TArray<AItem*>& Items);
+	void SetShopItemGrid(TArray<TSubclassOf<AItem>> ItemClasses);
 	
 private:
 	UPROPERTY(EditAnywhere)

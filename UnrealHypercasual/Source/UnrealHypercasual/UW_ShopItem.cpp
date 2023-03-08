@@ -51,17 +51,19 @@ void UUW_ShopItem::SetShopItemImage(UTexture2D* Image)
 	}
 }
 
-void UUW_ShopItem::SetShopItem(AItem* Item)
+void UUW_ShopItem::SetShopItem(TSubclassOf<AItem> ItemClass)
 {
-	SetShopItemTitleText(Item->GetTitle());
-	SetShopItemValueText(FString::FromInt(Item->GetValue()));
-	SetShopItemImage(Item->GetThumbnail());
-
-	ShopItem = Item;
+	ShopItemClass = ItemClass;
+	
+	const AItem* ShopItem = ShopItemClass.GetDefaultObject(); 
+	
+	SetShopItemTitleText(ShopItem->GetTitle());
+	SetShopItemValueText(FString::FromInt(ShopItem->GetValue()));
+	SetShopItemImage(ShopItem->GetThumbnail());
 }
 
 
 void UUW_ShopItem::HandleShopItemButtonClick()
 {
-	OnShopItemButtonClicked.Broadcast(ShopItem);
+	OnShopItemButtonClicked.Broadcast(ShopItemClass);
 }

@@ -25,34 +25,28 @@ void UUW_Shop::SetShopTitleText(FString Text)
 	}
 }
 
-void UUW_Shop::SetShopItemGrid(const TArray<AItem*>& Items)
+void UUW_Shop::SetShopItemGrid(TArray<TSubclassOf<AItem>> ItemClasses)
 {
-
-	
-	if (ShopItemGrid)
+	if (ShopItemGrid == nullptr || ShopItemWidgetClass == nullptr)
 	{
-		ShopItemGrid->ClearChildren();
-		
-		if (ShopItemWidgetClass)
-		{
+		return;
+	}
 	
-			// Add new items to the grid
-			for (int i = 0; i < Items.Num(); ++i)
-			{
-				
-				if (UUW_ShopItem* ShopItemWidget = CreateWidget<UUW_ShopItem>(this, ShopItemWidgetClass))
-				{
-					constexpr int RowSize = 4;
-					const int RowNumber = i / RowSize;
-					const int ColumnNumber = i % RowSize;
+	ShopItemGrid->ClearChildren();
+	
+	// Add new items to the grid
+	for (int i = 0; i < ItemClasses.Num(); ++i)
+	{
+		if (UUW_ShopItem* ShopItemWidget = CreateWidget<UUW_ShopItem>(this, ShopItemWidgetClass))
+		{
+			constexpr int RowSize = 4;
+			const int RowNumber = i / RowSize;
+			const int ColumnNumber = i % RowSize;
 
-					ShopItemGrid->AddChildToUniformGrid(ShopItemWidget, RowNumber, ColumnNumber);
-					ShopItemWidget->SetShopItem(Items[i]);
-
-					
-				}
-				
-			}
+			ShopItemGrid->AddChildToUniformGrid(ShopItemWidget, RowNumber, ColumnNumber);
+			ShopItemWidget->SetShopItem(ItemClasses[i]);
 		}
 	}
+		
+	
 }

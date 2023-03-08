@@ -109,15 +109,11 @@ private:
 	TArray<TSubclassOf<class AItem>>  ShopItems;
 	
 	void GenerateShopStock();
-
-
-
-
-
-
+	
 
 	// ----- UI
 
+private:
 	class UUW_TowerDefenceHUD* GetHUD() const;
 	
 	void UpdateTitleText(FString Text);
@@ -130,4 +126,16 @@ private:
 	void UpdateGoldText(int GoldBalance);
 	
 	void UpdateWaveText(int CurrentWave);
+
+
+
+	// ----- Player Inventory
+
+public:
+	int GetPlayerGold() const { return PlayerGold; }
+	void SetPlayerGold(const int GoldTotal);
+	void AddPlayerGold(const int GoldAmount);
+	
+private:
+	int PlayerGold;
 };

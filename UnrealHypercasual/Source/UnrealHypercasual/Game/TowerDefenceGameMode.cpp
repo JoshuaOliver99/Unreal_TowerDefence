@@ -30,6 +30,10 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 	else if (ACharacterEnemy* KilledEnemy = Cast<ACharacterEnemy>(DeadActor))
 	{
 		KilledEnemy->HandleDestruction();
+
+		// Add player gold.
+		// TODO: make this value relative to the enemy spawn cost
+		AddPlayerGold(10);
 		
 		EnemyCount--;
 		if (EnemyCount <= 0)
@@ -267,8 +271,21 @@ void ATowerDefenceGameMode::UpdateWaveText(int CurrentWave)
 		TowerDefenceHUD->UpdateWaveText(CurrentWave);
 	}
 }
-
 #pragma endregion UI
+
+
+
+#pragma region Player
+void ATowerDefenceGameMode::SetPlayerGold(const int GoldTotal)
+{
+	PlayerGold = GoldTotal;
+}
+
+void ATowerDefenceGameMode::AddPlayerGold(const int GoldAmount)
+{
+	PlayerGold += GoldAmount;
+}
+#pragma endregion Player
 
 
 // TODO: Better implement a game start function

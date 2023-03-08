@@ -48,6 +48,7 @@ public:
 	void UseItem();
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item")
 	UStaticMeshComponent* ItemMesh;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
