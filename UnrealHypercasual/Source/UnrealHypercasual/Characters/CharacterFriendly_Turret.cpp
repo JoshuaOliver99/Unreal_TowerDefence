@@ -3,6 +3,7 @@
 
 #include "CharacterFriendly_Turret.h"
 
+#include "UnrealHypercasual/Interactable.h"
 #include "UnrealHypercasual/Grabber/GrabbableActorComponent.h"
 
 ACharacterFriendly_Turret::ACharacterFriendly_Turret()
@@ -11,6 +12,6 @@ ACharacterFriendly_Turret::ACharacterFriendly_Turret()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	// Create Default Components
-	GrabbableActorComponent = CreateDefaultSubobject<UGrabbableActorComponent>(TEXT("Grabbable Actor Component"));
+	// Create Default Components...
+	InteractableComponent = CreateDefaultSubobject<UInteractable>(TEXT("Interactable Component"));
 }
