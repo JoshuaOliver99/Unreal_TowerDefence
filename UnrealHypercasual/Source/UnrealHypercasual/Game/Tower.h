@@ -6,26 +6,32 @@
 #include "GameFramework/Actor.h"
 #include "Tower.generated.h"
 
+class UHealthComponent;
+
 UCLASS()
 class UNREALHYPERCASUAL_API ATower : public AActor
 {
 	GENERATED_BODY()
+
+public:
+	UHealthComponent* GetHealthComponent() const { return  HealthComponent; }
 	
-public:	
+	void HandleDestruction();
+
+protected:	
 	// Sets default values for this actor's properties
 	ATower();
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void HandleDestruction();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UStaticMeshComponent* TowerMesh;
+	UStaticMeshComponent* TowerMesh;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UHealthComponent* HealthComponent;
+	UHealthComponent* HealthComponent;
 
 	
 	// Called when the game starts or when spawned

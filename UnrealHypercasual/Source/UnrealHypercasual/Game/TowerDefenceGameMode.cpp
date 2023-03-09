@@ -7,120 +7,85 @@
 #include "Tower.h"
 #include "TowerDefencePlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Logging/LogMacros.h"
 #include "Math/UnrealMathUtility.h"
 #include "UnrealHypercasual/UW_TowerDefenceHUD.h"
 #include "UnrealHypercasual/Characters/CharacterEnemy.h"
+#include "UnrealHypercasual/Health/HealthComponent.h"
 
-
-void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
-{
-	if (DeadActor == Tower)
-	{
-		
-		Tower->HandleDestruction();
-
-		if (PlayerController)
-		{
-			PlayerController->SetPlayerEnabledState(false);
-		}
-
-		// Lose
-		GameOver();
-	}
-	else if (ACharacterEnemy* KilledEnemy = Cast<ACharacterEnemy>(DeadActor))
-	{
-		KilledEnemy->HandleDestruction();
-
-		// Add player gold.
-		// TODO: make this value relative to the enemy spawn cost
-		AddPlayerGold(10);
-		
-		EnemyCount--;
-		if (EnemyCount <= 0)
-		{
-			// Ensure this isn't a false win...
-			// TODO: add a timer to ensure the level is actually won!
-			if (GameState != InPlay)
-			{
-				GameOver();
-				return;
-			}
-			
-			WaveCompleted();
-		}
-	}
-}
 
 void ATowerDefenceGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	HandleGameStart();
+
 }
 
-void ATowerDefenceGameMode::GameOver()
-{
-	GameState = EGameState::Ended;
-
-	// TODO: Replace this with the GameOver Widget Screen
-	//UpdateTitleText(FString::Printf(TEXT("Game Over!")));
-	
-	// TODO: Add an option for reloading the level
-}
-
+#pragma region Gameplay Stages
 void ATowerDefenceGameMode::HandleGameStart()
 {
-	// Get PlayerController*
+	// ----- Get PlayerController*
 	PlayerController = Cast<ATowerDefencePlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 	
-	// Get Tower*
-	Tower = Cast<ATower>(UGameplayStatics::GetActorOfClass(GetWorld(), ATower::StaticClass()));
-
-	// Get EnemySpawnPoints*
-	TArray<AActor*> SpawnPoints;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawn::StaticClass(), SpawnPoints);
-	EnemySpawnPoints.Empty();
-	for (int i = 0; i < SpawnPoints.Num(); ++i)
+	// ----- Get Towers*
+	TArray<AActor*> FoundTowers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATower::StaticClass(), FoundTowers);
+	Towers.Empty();
+	for (int i = 0; i < FoundTowers.Num(); ++i)
 	{
-		EnemySpawnPoints.Add(Cast<AEnemySpawn>(SpawnPoints[i]));	
+		Towers.Add(Cast<ATower>(FoundTowers[i]));
+		
+		if (Towers[i]->GetHealthComponent())
+		{
+			Towers[i]->GetHealthComponent()->OnDamageTaken.AddDynamic(this, &ATowerDefenceGameMode::ActorTakenDamage);
+		}
 	}
-	if (SpawnPoints.Num() < 1)
+	if (Towers.Num() < 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s No EnemySpawnPoints found!"), *GetActorNameOrLabel())
+		UE_LOG(LogTemp, Warning, TEXT("%s no Towers found!"), *GetActorNameOrLabel())
 	}
-
-
-	GenerateShopStock();
 	
+	
+	// ---- Get EnemySpawnPoints*
+	TArray<AActor*> FoundEnemySpawns;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawn::StaticClass(), FoundEnemySpawns);
+	EnemySpawnPoints.Empty();
+	for (int i = 0; i < FoundEnemySpawns.Num(); ++i)
+	{
+		EnemySpawnPoints.Add(Cast<AEnemySpawn>(FoundEnemySpawns[i]));	
+	}
+	if (EnemySpawnPoints.Num() < 1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s no EnemySpawnPoints found!"), *GetActorNameOrLabel())
+	}
+
+	
+	// ----- Initialize Game Data
 	Wave = 1;
+	GenerateShopStock();
 
-	// Ensure other Actors are initialised before beginning (5s initial start delay)
-	FTimerHandle DelayBeginWaveTimerHandle;
-	GetWorldTimerManager().SetTimer(DelayBeginWaveTimerHandle, this, &ATowerDefenceGameMode::BeginWave, 5.0f, false);
+	
+	// ----- Initialize UI
+	FTimerHandle DelayUIInitializeTimerHandle;
+	GetWorldTimerManager().SetTimer(DelayUIInitializeTimerHandle, this, &ATowerDefenceGameMode::UpdateAllUI, 0.01f, false);
+
+	
+	// ----- Begin Wave 1
+	BeginWave();
 }
-
-
-int32 ATowerDefenceGameMode::GetTargetEnemyCount() const
-{
-	TArray<AActor*> Enemies;
-	UGameplayStatics::GetAllActorsOfClass(this, ACharacterEnemy::StaticClass(), Enemies);
-
-	return Enemies.Num();
-}
-
 
 void ATowerDefenceGameMode::BeginWave()
 {
 	GameState = EGameState::InPlay;
 
 	
+	// ----- Wave UI
 	UpdateTitleText(FString::Printf(TEXT("Wave Incoming!")));
 	UpdateWaveText(Wave);
-
-	// Clear Title Text after 3s
+	
 	FTimerHandle ClearWaveTextTimerHandle;
 	GetWorldTimerManager().SetTimer(ClearWaveTextTimerHandle, this, &ATowerDefenceGameMode::ClearTitleText, 3.0f, false);
 
-	
 	
 	// Calculate difficulty budget
 	DifficultyBudget = Wave * WaveDifficultyMultiplier;
@@ -142,17 +107,11 @@ void ATowerDefenceGameMode::BeginWave()
 			TSubclassOf<ACharacterEnemy> EnemyClass = SpawnableEnemyTypes[i].Get();
 			ACharacterEnemy* EnemyInstance = EnemyClass.GetDefaultObject();
 			
-			// Check if affordable
-			if (DifficultyBudget >= EnemyInstance->GetEnemySpawnCost())
+			// Check if affordable && spawnable
+			if (DifficultyBudget >= EnemyInstance->GetEnemySpawnCost() && GetWorld()->SpawnActor(EnemyClass, SpawnPointLocation))
 			{
-				// Spawn
-				if (GetWorld()->SpawnActor(EnemyClass, SpawnPointLocation))
-				{
-					// Deduct cost
-					DifficultyBudget -= EnemyInstance->GetEnemySpawnCost();
-					
-					break;
-				}
+				DifficultyBudget -= EnemyInstance->GetEnemySpawnCost();
+				break;
 			}
 		}
 
@@ -176,7 +135,10 @@ void ATowerDefenceGameMode::BeginWave()
 void ATowerDefenceGameMode::WaveCompleted()
 {
 	Wave++;
+	
 	GameState = EGameState::BetweenRounds;
+
+	AddPlayerGold(10);
 
 	// ----- Wave Start Delay
 	TimeUntilWaveStart = WaveStartDelay;
@@ -195,6 +157,100 @@ void ATowerDefenceGameMode::WaveCountdownDelegate()
 		BeginWave();
 	}
 }
+
+void ATowerDefenceGameMode::GameOver()
+{
+	
+	UE_LOG(LogTemp, Warning, TEXT("Game Over"));
+	
+	GameState = EGameState::Ended;
+
+	PlayerController->SetPlayerEnabledState(false);
+
+	// TODO: Replace this with the GameOver Widget Screen
+	//UpdateTitleText(FString::Printf(TEXT("Game Over!")));
+	
+	// TODO: Add an option for reloading the level
+}
+#pragma endregion  Gameplay Stages
+
+
+#pragma region Gameplay Helpers
+void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
+{
+	if (DeadActor->GetClass() == ATower::StaticClass())
+	{
+		for (int i = 0; i < Towers.Num(); ++i)
+		{
+			if (DeadActor == Towers[i])
+			{
+				Towers[i]->HandleDestruction();
+				Towers.RemoveAt(i);
+			}
+		}
+
+		if (Towers.Num() < 1 && PlayerController)
+		{
+			GameOver();
+		}
+
+
+	}
+	else if (ACharacterEnemy* KilledEnemy = Cast<ACharacterEnemy>(DeadActor))
+	{
+		KilledEnemy->HandleDestruction();
+
+		// Add player gold.
+		// TODO: make this value relative to the enemy spawn cost
+		AddPlayerGold(10);
+		
+		EnemyCount--;
+		if (EnemyCount <= 0)
+		{
+			// Ensure this isn't a false win...
+			// TODO: add a timer to ensure the level is actually won!
+			//if (GameState != InPlay)
+			//{
+			//	GameOver();
+			//	return;
+			//}
+			
+			WaveCompleted();
+		}
+	}
+}
+
+int32 ATowerDefenceGameMode::CalculateEnemyCount() const
+{
+	TArray<AActor*> Enemies;
+	UGameplayStatics::GetAllActorsOfClass(this, ACharacterEnemy::StaticClass(), Enemies);
+
+	return Enemies.Num();
+}
+
+void ATowerDefenceGameMode::ActorTakenDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (Cast<ATower>(DamagedActor))            
+	{                                                              
+		UpdateTowerHealthBar();
+	}
+}
+#pragma endregion  Gameplay Helpers
+
+
+#pragma region Player
+void ATowerDefenceGameMode::SetPlayerGold(const int GoldTotal)
+{
+	PlayerGold = GoldTotal;
+	UpdateGoldText(PlayerGold);
+}
+
+void ATowerDefenceGameMode::AddPlayerGold(const int GoldAmount)
+{
+	PlayerGold += GoldAmount;
+	UpdateGoldText(PlayerGold);
+}
+#pragma endregion Player
 
 
 #pragma region Shop
@@ -240,19 +296,25 @@ void ATowerDefenceGameMode::ClearTitleText()
 	UpdateTitleText("");
 }
 
-void ATowerDefenceGameMode::UpdatePlayerHealthBar(float PlayerHealthPercentage)
+void ATowerDefenceGameMode::UpdatePlayerHealthBar()
 {
 	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
-		TowerDefenceHUD->UpdatePlayerHealthBar(PlayerHealthPercentage);
+		TowerDefenceHUD->UpdatePlayerHealthBar(0);
 	}
 }
 
-void ATowerDefenceGameMode::UpdateTowerHealthBar(float TowerHealthPercentage)
+void ATowerDefenceGameMode::UpdateTowerHealthBar()
 {
 	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
-		TowerDefenceHUD->UpdateTowerHealthBar(TowerHealthPercentage);
+		float TotalTowerHealthPercentage = 0.0f;
+		for (int i = 0; i < Towers.Num(); ++i)
+		{
+			TotalTowerHealthPercentage += Towers[i]->GetHealthComponent()->GetHealthPercentage();
+		}
+		
+		TowerDefenceHUD->UpdateTowerHealthBar(TotalTowerHealthPercentage / Towers.Num());
 	}
 }
 
@@ -271,21 +333,19 @@ void ATowerDefenceGameMode::UpdateWaveText(int CurrentWave)
 		TowerDefenceHUD->UpdateWaveText(CurrentWave);
 	}
 }
+
+
+void ATowerDefenceGameMode::UpdateAllUI()
+{
+	// TODO Implement ClearTitleText();
+	UpdatePlayerHealthBar();
+	UpdateTowerHealthBar();
+	UpdateGoldText(PlayerGold);
+	UpdateWaveText(Wave);
+}
 #pragma endregion UI
 
 
-
-#pragma region Player
-void ATowerDefenceGameMode::SetPlayerGold(const int GoldTotal)
-{
-	PlayerGold = GoldTotal;
-}
-
-void ATowerDefenceGameMode::AddPlayerGold(const int GoldAmount)
-{
-	PlayerGold += GoldAmount;
-}
-#pragma endregion Player
 
 
 // TODO: Better implement a game start function

@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnDamageTaken, AActor*, DamagedActor, float, Damage, const class UDamageType*, DamageType, class AController*, InstigatedBy, AActor*, DamageCauser);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UNREALHYPERCASUAL_API UHealthComponent : public UActorComponent
@@ -15,11 +17,10 @@ class UNREALHYPERCASUAL_API UHealthComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
-
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	float GetHealth() const {return Health;}
+	float GetMaxHealth() const {return MaxHealth;}
+	float GetHealthPercentage() const {return (Health / MaxHealth) * 100;}
 
 	virtual void HandleDestruction();
 
@@ -44,11 +45,17 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Health")
 	TSubclassOf<class UCameraShakeBase> DeathCameraShakeClass;
-	
-	// Bound to a delegate
+
+	UPROPERTY()
+	class ATowerDefenceGameMode* TowerDefenceGameMode;
+
+	AActor* Owner;
+
+private:
 	UFUNCTION()
 	void DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser );
 
-	class ATowerDefenceGameMode* TowerDefenceGameMode;
-		
+public:
+	UPROPERTY(BlueprintAssignable, Category="Game|Damage")
+	FOnDamageTaken OnDamageTaken;
 };

@@ -14,39 +14,37 @@ UHealthComponent::UHealthComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
 // Called when the game starts
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+		
 	Health = MaxHealth;
+	
+	TowerDefenceGameMode = Cast<ATowerDefenceGameMode>(UGameplayStatics::GetGameMode(this));
 	
 	// Bind delegates
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
-
-	TowerDefenceGameMode = Cast<ATowerDefenceGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 void UHealthComponent::DamageTaken(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* Instigator, AActor* DamageCauser)
 {
 	if (Damage <= 0.f)
-	{
 		return;
-	}
 
 	Health -= Damage;
-
+	
+	if (OnDamageTaken.IsBound())
+	{
+		OnDamageTaken.Broadcast(DamagedActor, Damage, DamageType, Instigator, DamageCauser);
+	}
+	
 	if (Health <= 0.f && TowerDefenceGameMode)
 	{
 		TowerDefenceGameMode->ActorDied(DamagedActor);
 	}
 }
+
 
 void UHealthComponent::HandleDestruction()
 {
@@ -60,5 +58,6 @@ void UHealthComponent::HandleDestruction()
 		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(DeathCameraShakeClass);
 
 	
-	GetOwner()->Destroy();
+	if (GetOwner())
+		GetOwner()->Destroy();
 }

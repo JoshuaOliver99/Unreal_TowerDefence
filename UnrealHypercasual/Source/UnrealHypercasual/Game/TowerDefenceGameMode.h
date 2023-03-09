@@ -6,6 +6,13 @@
 #include "GameFramework/GameModeBase.h"
 #include "TowerDefenceGameMode.generated.h"
 
+class UUW_TowerDefenceHUD;
+class ATower;
+class ATowerDefencePlayerController;
+class ACharacterEnemy;
+class AEnemySpawn;
+class AItem;
+
 /**
  * 
  */
@@ -17,9 +24,6 @@ class UNREALHYPERCASUAL_API ATowerDefenceGameMode : public AGameModeBase
 public:
 	// Pass the actor who dies to dictate gameplay function
 	void ActorDied(AActor* DeadActor);
-
-	// Return the active tower
-	class ATower* GetTower() const {return Tower;}
 	
 protected:
 	// Native event for when play begins for this actor
@@ -27,38 +31,17 @@ protected:
 
 	// Called upon all towers becoming destroyed
 	void GameOver();
-	
-private:
 
-	// TODO: Make this an array to allow for multiple towers. Maybe order matters?
-	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
-	class ATower* Tower;
-
-	UPROPERTY()
-	class ATowerDefencePlayerController* PlayerController;
-
-	//float StartDelay = 3.f;
+	// Initialises all starting values
 	void HandleGameStart();
-
-	int32 GetTargetEnemyCount() const;
-	int32 EnemyCount = 0;
-
-
-
-	// TODO: Review these additions...
 	
-	// ----- Enemy Spawning...
+	// TODO: Implement
+	UFUNCTION()
+	void ActorTakenDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 
-	UPROPERTY(EditAnywhere, Category = "Gameplay")
-	TArray<TSubclassOf<class ACharacterEnemy>> SpawnableEnemyTypes;
-
-	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
-	TArray<class AEnemySpawn*> EnemySpawnPoints;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
-	int32 DifficultyBudget = 0;
-	
-	// ----- Game properties...
+private:
+	UPROPERTY()
+	ATowerDefencePlayerController* PlayerController;
 
 	enum EGameState
 	{
@@ -67,70 +50,13 @@ private:
 		BetweenRounds
 	};
 	EGameState GameState;
+
+	// TODO: Implement - A cutscene style pause
+	//UPROPERTY()
+	//float StartDelay = 3.f;
+
 	
-	// ----- Wave properties...
-	
-	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
-	int32 Wave = 1;
-	
-	UPROPERTY(EditAnywhere, Category = "Gameplay")
-	float WaveDifficultyMultiplier = 110;
-
-	// ----- Wave delay...
-	
-	float WaveStartDelay = 30.0f;
-	float TimeUntilWaveStart;
-
-	FTimerHandle WaveCountdownTimerDelegate;
-	
-	// ----- Wave functions...
-
-	// Begins the wave
-	void BeginWave();
-
-	// Called when a Wave is successfully completed 
-	void WaveCompleted();
-
-	// ...
-	void WaveCountdownDelegate();
-
-
-
-
-	// ----- Shop
-
-public:
-	TArray<TSubclassOf<class AItem>> GetShopItems() const { return ShopItems; }
-
-private:
-	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<class AItem>> SpawnableShopItems;
-	
-	TArray<TSubclassOf<class AItem>>  ShopItems;
-	
-	void GenerateShopStock();
-	
-
-	// ----- UI
-
-private:
-	class UUW_TowerDefenceHUD* GetHUD() const;
-	
-	void UpdateTitleText(FString Text);
-	void ClearTitleText();
-	
-	void UpdatePlayerHealthBar(float PlayerHealthPercentage);
-
-	void UpdateTowerHealthBar(float TowerHealthPercentage);
-
-	void UpdateGoldText(int GoldBalance);
-	
-	void UpdateWaveText(int CurrentWave);
-
-
-
-	// ----- Player Inventory
-
+// ----- Player Inventory
 public:
 	int GetPlayerGold() const { return PlayerGold; }
 	void SetPlayerGold(const int GoldTotal);
@@ -138,4 +64,85 @@ public:
 	
 private:
 	int PlayerGold;
+	
+// ----- Towers
+public:
+	TArray<ATower*> GetTowers() const {return Towers;}
+	
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
+	TArray<ATower*> Towers;
+
+
+// ----- Enemy
+private:
+	UPROPERTY(EditAnywhere, Category = "Gameplay")
+	TArray<TSubclassOf<ACharacterEnemy>> SpawnableEnemyTypes;
+
+	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
+	TArray<AEnemySpawn*> EnemySpawnPoints;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
+	int32 DifficultyBudget = 0;
+
+	int32 EnemyCount = 0;
+	
+	int32 CalculateEnemyCount() const;
+
+
+// ----- Wave properties
+private:	
+	UPROPERTY(VisibleAnywhere, Category = "Gameplay")
+	int32 Wave = 1;
+	
+	UPROPERTY(EditAnywhere, Category = "Gameplay")
+	float WaveDifficultyMultiplier = 110;
+
+	UPROPERTY(EditAnywhere, Category = "Gameplay")
+	float WaveStartDelay = 30.0f;
+	
+	float TimeUntilWaveStart;
+
+	FTimerHandle WaveCountdownTimerDelegate;
+	
+	// Begins the wave of Wave
+	void BeginWave();
+
+	// Called when a wave is successfully completed 
+	void WaveCompleted();
+
+	// A Countdown to handle events in-between waves
+	void WaveCountdownDelegate();
+	
+
+// ----- Shop
+public:
+	TArray<TSubclassOf<AItem>> GetShopItems() const { return ShopItems; }
+
+private:
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<AItem>> SpawnableShopItems;
+	
+	TArray<TSubclassOf<AItem>>  ShopItems;
+	
+	void GenerateShopStock();
+	
+
+// ----- UI
+private:
+	UUW_TowerDefenceHUD* GetHUD() const;
+	
+	void UpdateTitleText(FString Text);
+	void ClearTitleText();
+	
+	void UpdatePlayerHealthBar();
+
+	void UpdateTowerHealthBar();
+
+	void UpdateGoldText(int GoldBalance);
+	
+	void UpdateWaveText(int CurrentWave);
+
+	void UpdateAllUI();
 };
+

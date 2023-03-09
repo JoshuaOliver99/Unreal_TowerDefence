@@ -34,11 +34,17 @@ EBTNodeResult::Type UBTTask_FindLocationNearTower::ExecuteTask(UBehaviorTreeComp
 	}
 
 	// Get Tower location
-	const FVector TowerLocation = GameMode->GetTower()->GetTargetLocation();
+	if(GameMode->GetTowers()[0] == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ATowerDefenceGameMode 'Tower' was not found!"));
+		return EBTNodeResult::Failed;
+	}
+	// TODO: TEXT FIX ----- REMOVE HARDCODED REFERENCE (0)
+	const FVector TowerLocation = GameMode->GetTowers()[0]->GetTargetLocation();
 	
 	// Obtain Navigation System and find a random location
-	FNavLocation Location{};
-	const UNavigationSystemV1* NavSystem{UNavigationSystemV1::GetCurrent(GetWorld())};
+	FNavLocation Location;
+	const UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (IsValid(NavSystem) && NavSystem->GetRandomReachablePointInRadius(TowerLocation, AcceptanceRadius, Location))
 	{
 		AIController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, Location.Location);

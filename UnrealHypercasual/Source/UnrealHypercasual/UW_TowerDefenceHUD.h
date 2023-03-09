@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "UW_TowerDefenceHUD.generated.h"
 
+class UTextBlock;
+class UProgressBar;
+
 /**
  * 
  */
@@ -33,13 +36,13 @@ public:
 	void UpdateWaveText(int WaveNum);
 	
 private:
-	class UTextBlock* TitleText;
+	UTextBlock* TitleText;
 	
-	class UProgressBar* PlayerHealthBar;
+	UProgressBar* PlayerHealthBar;
 	
-	class UProgressBar* TowerHealthBar;
+	UProgressBar* TowerHealthBar;
 
-	class UTextBlock* GoldText;
+	UTextBlock* GoldText;
 	
-	class UTextBlock* WaveText;
+	UTextBlock* WaveText;
 };

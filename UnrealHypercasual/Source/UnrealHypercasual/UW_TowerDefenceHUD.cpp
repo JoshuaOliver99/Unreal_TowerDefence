@@ -29,7 +29,7 @@ void UUW_TowerDefenceHUD::UpdatePlayerHealthBar(float PlayerHealthPercentage)
 {
 	if (PlayerHealthBar)
 	{
-		TowerHealthBar->SetPercent(PlayerHealthPercentage);
+		TowerHealthBar->SetPercent(PlayerHealthPercentage / 100);
 	}
 }
 
@@ -37,7 +37,7 @@ void UUW_TowerDefenceHUD::UpdateTowerHealthBar(float TowerHealthPercentage)
 {
 	if (TowerHealthBar)
 	{
-		TowerHealthBar->SetPercent(TowerHealthPercentage);
+		TowerHealthBar->SetPercent(TowerHealthPercentage / 100);
 	}
 }
 

@@ -21,7 +21,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	// To be called whenever this Character is destroyed 
+	// To be called whenever this Character is destroyed
 	virtual void HandleDestruction();
 
 	virtual void UseWeapon();
