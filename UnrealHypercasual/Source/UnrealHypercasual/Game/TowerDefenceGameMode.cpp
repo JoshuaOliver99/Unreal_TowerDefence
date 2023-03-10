@@ -24,10 +24,18 @@ void ATowerDefenceGameMode::BeginPlay()
 #pragma region Gameplay Stages
 void ATowerDefenceGameMode::HandleGameStart()
 {
-	// ----- Get PlayerController*
+	// ----- Get & Setup Player
 	PlayerController = Cast<ATowerDefencePlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	
-	// ----- Get Towers*
+	if (PlayerController)
+	{
+		if (UHealthComponent* PlayerHealthComponent = Cast<UHealthComponent>(PlayerController->GetPawn()->GetComponentByClass(UHealthComponent::StaticClass())))
+		{
+			PlayerHealthComponent->OnDamageTaken.AddDynamic(this, &ATowerDefenceGameMode::ActorTakenDamage);
+		}
+	}
+
+		
+	// ----- Get & Setup Towers
 	TArray<AActor*> FoundTowers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATower::StaticClass(), FoundTowers);
 	Towers.Empty();
@@ -45,8 +53,9 @@ void ATowerDefenceGameMode::HandleGameStart()
 		UE_LOG(LogTemp, Warning, TEXT("%s no Towers found!"), *GetActorNameOrLabel())
 	}
 	
-	
-	// ---- Get EnemySpawnPoints*
+
+		
+	// ---- Get & Setup EnemySpawnPoints
 	TArray<AActor*> FoundEnemySpawns;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemySpawn::StaticClass(), FoundEnemySpawns);
 	EnemySpawnPoints.Empty();
@@ -220,20 +229,33 @@ void ATowerDefenceGameMode::ActorDied(AActor* DeadActor)
 	}
 }
 
-int32 ATowerDefenceGameMode::CalculateEnemyCount() const
-{
-	TArray<AActor*> Enemies;
-	UGameplayStatics::GetAllActorsOfClass(this, ACharacterEnemy::StaticClass(), Enemies);
-
-	return Enemies.Num();
-}
-
 void ATowerDefenceGameMode::ActorTakenDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	if (Cast<ATower>(DamagedActor))            
 	{                                                              
 		UpdateTowerHealthBar();
 	}
+	else if (Cast<ACharacter>(DamagedActor))
+	{
+		if (DamagedActor == PlayerController->GetPawn())
+		{
+			UpdatePlayerHealthBar();
+		}
+		else if (Cast<ACharacterEnemy>(DamagedActor))
+		{
+			
+		}
+	}
+
+	
+}
+
+int32 ATowerDefenceGameMode::CalculateEnemyCount() const
+{
+	TArray<AActor*> Enemies;
+	UGameplayStatics::GetAllActorsOfClass(this, ACharacterEnemy::StaticClass(), Enemies);
+
+	return Enemies.Num();
 }
 #pragma endregion  Gameplay Helpers
 
@@ -300,7 +322,14 @@ void ATowerDefenceGameMode::UpdatePlayerHealthBar()
 {
 	if (UUW_TowerDefenceHUD* TowerDefenceHUD = GetHUD())
 	{
-		TowerDefenceHUD->UpdatePlayerHealthBar(0);
+		if (PlayerController)
+		{
+			if (UHealthComponent* PlayerHealthComponent = Cast<UHealthComponent>(PlayerController->GetPawn()->GetComponentByClass(UHealthComponent::StaticClass())))
+			{
+
+				TowerDefenceHUD->UpdatePlayerHealthBar(PlayerHealthComponent->GetHealthPercentage());
+			}
+		}
 	}
 }
 
