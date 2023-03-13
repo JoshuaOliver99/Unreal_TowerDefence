@@ -70,6 +70,30 @@ void ACharacterBase::HandleDestruction()
 	}
 }
 
+bool ACharacterBase::GetAliveStatus() const
+{
+	if (HealthComponent)
+	{
+		if (HealthComponent->GetHealth() > 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+float ACharacterBase::GetHealthValue() const
+{
+	if (HealthComponent)
+	{
+		return HealthComponent->GetHealth();
+	}
+
+	return -1.0f;
+}
+
+
 void ACharacterBase::UseWeapon()
 {
 	if (Weapon)
@@ -77,4 +101,3 @@ void ACharacterBase::UseWeapon()
 		Weapon->UseWeapon();
 	}
 }
-

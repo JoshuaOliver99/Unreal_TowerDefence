@@ -20,12 +20,21 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
+public:
 	// To be called whenever this Character is destroyed
 	virtual void HandleDestruction();
-
-	virtual void UseWeapon();
 	
+	UFUNCTION(BlueprintPure)
+	bool GetAliveStatus() const;
+
+	UFUNCTION(BlueprintPure)
+	float GetHealthValue() const;
+	
+public:
+	UFUNCTION(BlueprintCallable)
+	virtual void UseWeapon();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
