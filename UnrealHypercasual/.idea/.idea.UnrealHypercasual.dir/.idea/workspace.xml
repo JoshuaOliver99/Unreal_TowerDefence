@@ -4,22 +4,7 @@
     <projectFile>UnrealHypercasual.uproject</projectFile>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c273fde9-15f9-4922-8c7b-b0c733fab5a2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.UnrealHypercasual.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.UnrealHypercasual.dir/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/BP_CharacterBase.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/BB_Enemy.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/BP_AIControllerEnemy.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/BT_Enemy.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BP_EnemyAIController_Kamikaze.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BP_EnemyAIController_Kamikaze.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BP_EnemyAIController_Rifleman.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BP_EnemyAIController_Rifleman.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BT_Enemy_Kamikaze.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BT_Enemy_Kamikaze.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BT_Enemy_Rifleman.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/HypercasualGame/AI/Enemy/Kamikaze/BT_Enemy_Rifleman.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/HypercasualGame/Levels/TowerDefenceArena1_Draft/2/FG/8G63K13XAXKNSWQ7NVKNU3.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/HypercasualGame/Levels/TowerDefenceArena1_Draft/2/FG/8G63K13XAXKNSWQ7NVKNU3.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactable.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactable.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactable.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/UnrealHypercasual/Interactables/Interactor.h" afterDir="false" />
-    </list>
+    <list default="true" id="c273fde9-15f9-4922-8c7b-b0c733fab5a2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,7 +41,7 @@
         <option name="PLATFORM" value="Win64" />
         <option name="EXECUTABLE_PATH" value="C:\Program Files\Epic Games\UE_5.1\Engine\Binaries\Win64\UnrealEditor-Win64-DebugGame.exe" />
         <option name="WORKING_DIRECTORY" value="C:\Program Files\Epic Games\UE_5.1" />
-        <option name="MANDATORY_PROGRAM_PARAMETERS" value=" &quot;C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence\UnrealHypercasual\UnrealHypercasual.uproject&quot;" />
+        <option name="MANDATORY_PROGRAM_PARAMETERS" value=" &quot;C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence2\UnrealHypercasual\UnrealHypercasual.uproject&quot;" />
         <option name="CUSTOM_PROGRAM_PARAMETERS" value="" />
         <option name="PASS_PARENT_ENVS" value="1" />
         <option name="USE_EXTERNAL_CONSOLE" value="0" />
@@ -64,7 +49,7 @@
       <configuration_3>
         <option name="CONFIGURATION" value="DebugGame" />
         <option name="PLATFORM" value="Win64" />
-        <option name="EXECUTABLE_PATH" value="C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence\UnrealHypercasual\Binaries\Win64\UnrealHypercasual-Win64-DebugGame.exe" />
+        <option name="EXECUTABLE_PATH" value="C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence2\UnrealHypercasual\Binaries\Win64\UnrealHypercasual-Win64-DebugGame.exe" />
         <option name="WORKING_DIRECTORY" value="C:\Program Files\Epic Games\UE_5.1" />
         <option name="MANDATORY_PROGRAM_PARAMETERS" value="" />
         <option name="CUSTOM_PROGRAM_PARAMETERS" value="" />
@@ -76,7 +61,7 @@
         <option name="PLATFORM" value="Win64" />
         <option name="EXECUTABLE_PATH" value="C:\Program Files\Epic Games\UE_5.1\Engine\Binaries\Win64\UnrealEditor.exe" />
         <option name="WORKING_DIRECTORY" value="C:\Program Files\Epic Games\UE_5.1" />
-        <option name="MANDATORY_PROGRAM_PARAMETERS" value=" &quot;C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence\UnrealHypercasual\UnrealHypercasual.uproject&quot;" />
+        <option name="MANDATORY_PROGRAM_PARAMETERS" value=" &quot;C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence2\UnrealHypercasual\UnrealHypercasual.uproject&quot;" />
         <option name="CUSTOM_PROGRAM_PARAMETERS" value="" />
         <option name="PASS_PARENT_ENVS" value="1" />
         <option name="USE_EXTERNAL_CONSOLE" value="0" />
@@ -84,7 +69,7 @@
       <configuration_5>
         <option name="CONFIGURATION" value="Development" />
         <option name="PLATFORM" value="Win64" />
-        <option name="EXECUTABLE_PATH" value="C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence\UnrealHypercasual\Binaries\Win64\UnrealHypercasual.exe" />
+        <option name="EXECUTABLE_PATH" value="C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence2\UnrealHypercasual\Binaries\Win64\UnrealHypercasual.exe" />
         <option name="WORKING_DIRECTORY" value="C:\Program Files\Epic Games\UE_5.1" />
         <option name="MANDATORY_PROGRAM_PARAMETERS" value="" />
         <option name="CUSTOM_PROGRAM_PARAMETERS" value="" />
@@ -94,7 +79,7 @@
       <configuration_6>
         <option name="CONFIGURATION" value="Shipping" />
         <option name="PLATFORM" value="Win64" />
-        <option name="EXECUTABLE_PATH" value="C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence\UnrealHypercasual\Binaries\Win64\UnrealHypercasual-Win64-Shipping.exe" />
+        <option name="EXECUTABLE_PATH" value="C:\Users\Joshua Simpson\Documents\GitHub\Unreal_TowerDefence2\UnrealHypercasual\Binaries\Win64\UnrealHypercasual-Win64-Shipping.exe" />
         <option name="WORKING_DIRECTORY" value="C:\Program Files\Epic Games\UE_5.1" />
         <option name="MANDATORY_PROGRAM_PARAMETERS" value="" />
         <option name="CUSTOM_PROGRAM_PARAMETERS" value="" />
@@ -133,6 +118,7 @@
       <workItem from="1681991898149" duration="966000" />
       <workItem from="1682087381527" duration="2227000" />
       <workItem from="1683218973831" duration="10014000" />
+      <workItem from="1685087964351" duration="1621000" />
     </task>
     <servers />
   </component>
