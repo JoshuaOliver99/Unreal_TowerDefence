@@ -1,0 +1,12 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\joshua simpson\\documents\\github\\unreal_towerdefence2\\unrealhypercasual\\plugins\\developer\\riderlink\\source\\rd\\thirdparty\\thirdparty.cpp",
+        "ProvidedModule": "",
+        "Includes": [
+            "c:\\users\\joshua simpson\\documents\\github\\unreal_towerdefence2\\unrealhypercasual\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\unrealeditor\\development\\rd\\definitions.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
