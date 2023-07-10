@@ -77,8 +77,14 @@ float ACharacterBase::GetHealthValue() const
 
 void ACharacterBase::UseWeapon()
 {
+	IsAttacking = true;
+	
 	if (Weapon)
 	{
 		Weapon->UseWeapon();
 	}
+
+	constexpr float AttackDelay = 0.02;
+	FTimerHandle MemberTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(MemberTimerHandle, this, &ACharacterBase::StopAttacking, AttackDelay, false);
 }

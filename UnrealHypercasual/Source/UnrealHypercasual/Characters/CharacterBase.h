@@ -56,12 +56,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void UseWeapon();
 
+	
 	UPROPERTY()
 	bool IsAttacking = false;
 
 	UFUNCTION(BlueprintPure)
 	bool GetAttackingStatus() const {return IsAttacking;}
 
+	void StopAttacking() {IsAttacking = false;}
 
 	
 // ----- TODO REVIEW / Move to Controller?

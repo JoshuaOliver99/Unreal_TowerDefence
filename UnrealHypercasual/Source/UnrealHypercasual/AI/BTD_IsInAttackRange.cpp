@@ -34,13 +34,33 @@ bool UBTD_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeComponent& Ow
 
 	
 	FVector TargetLocation;
-	if (const AActor* TowerActor =  Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey())))
+	if (const AActor* TargetActor =  Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey())))
 	{
-		// TODO: instead raycast to the actors model?
-		// This implementation doesnt take into account target size.
-		
-		// Is the Blackboard key an AActor?
-		TargetLocation = TowerActor->GetActorLocation();
+		// Find the closest point on the target actor's mesh
+		FVector ClosestPoint;
+		const UStaticMeshComponent* TargetMesh = TargetActor->FindComponentByClass<UStaticMeshComponent>();
+		if (TargetMesh != nullptr)
+		{
+			const FVector StartLocation = Character->GetActorLocation();
+			const FVector EndLocation = TargetActor->GetActorLocation();
+			FVector Direction = (EndLocation - StartLocation).GetSafeNormal();
+			FVector ClosestPointOnMesh;
+
+			const float HitResult = TargetMesh->GetClosestPointOnCollision(StartLocation, ClosestPointOnMesh);
+			if (HitResult >= 0.0f)
+			{
+				ClosestPoint = ClosestPointOnMesh;
+			}
+			else
+			{
+				// If no hit, fallback to using the target actor's location
+				ClosestPoint = EndLocation;
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("HitResult: %f"), HitResult);
+		}
+
+		TargetLocation = ClosestPoint;
 	}
 	else
 	{
@@ -49,7 +69,11 @@ bool UBTD_IsInAttackRange::CalculateRawConditionValue(UBehaviorTreeComponent& Ow
 	}
 
 	
+	
 	const float Distance = FVector::Distance(Character->GetActorLocation(), TargetLocation);
+
+	UE_LOG(LogTemp, Warning, TEXT("Distance: %f & Character.GetAttackRange: %f"), Distance, Character->GetAttackRange());
+
 	if (Distance > Character->GetAttackRange())
 	{
 		// Out of range
